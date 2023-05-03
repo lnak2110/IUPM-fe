@@ -2,7 +2,11 @@ import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getTaskDetailAPI, updateTaskAPI } from '../redux/reducers/taskReducer';
+import {
+  getTaskDetailAPI,
+  setNullTaskDetail,
+  updateTaskAPI,
+} from '../redux/reducers/taskReducer';
 import { theme } from '../App';
 import {
   getProjectDetailFullAPI,
@@ -45,6 +49,10 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
   useEffect(() => {
     dispatch(getProjectDetailFullAPI(projectId));
     dispatch(getProjectListsAPI(projectId));
+
+    return () => {
+      dispatch(setNullTaskDetail());
+    };
   }, [dispatch, projectId]);
 
   // Prevent MUI select warning invalid option

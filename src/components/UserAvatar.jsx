@@ -1,9 +1,9 @@
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 
-export const UserAvatar = ({ name, avatar, size = 40 }) => {
+export const UserAvatar = ({ name, avatar, tooltip = name, size = 40 }) => {
   return (
-    <Tooltip title={name}>
+    <Tooltip title={tooltip}>
       <Avatar alt={name} src={avatar} sx={{ height: size, width: size }}>
         {name}
       </Avatar>
