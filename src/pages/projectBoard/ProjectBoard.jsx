@@ -143,7 +143,9 @@ const ProjectBoard = () => {
                     Add User
                   </Button>
                 }
-                children={<UsersDialogContent />}
+                children={
+                  <UsersDialogContent leaderId={projectDetailFull?.leaderId} />
+                }
                 popupId="usersDialog"
                 title="All users"
                 ariaLabel="users-dialog-title"

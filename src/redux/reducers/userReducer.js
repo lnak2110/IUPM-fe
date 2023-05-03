@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { router } from '../../App';
 import {
@@ -98,10 +98,7 @@ export const getAllUsersInProjectAPI = createAsyncThunk(
 
 export const getUsersOutsideProjectByKeywordAPI = createAsyncThunk(
   'userReducer/getUsersOutsideProjectByKeywordAPI',
-  async (
-    { projectId: { projectId }, keyword: { keyword } },
-    { rejectWithValue }
-  ) => {
+  async ({ projectId, keyword }, { rejectWithValue }) => {
     try {
       const result = await axiosAuth.get(
         `/users/outside/project/${projectId}?keyword=${keyword}`
@@ -114,91 +111,6 @@ export const getUsersOutsideProjectByKeywordAPI = createAsyncThunk(
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
-    }
-  }
-);
-
-export const addUserToProjectAPI = createAsyncThunk(
-  'userReducer/addUserToProjectAPI',
-  async (userAndProjectData, { dispatch, rejectWithValue }) => {
-    try {
-      const result = await axiosAuth.post(
-        '/Project/assignUserProject',
-        userAndProjectData
-      );
-
-      if (result?.status === 200) {
-        // Refresh users list in the project
-        await dispatch(getUserByProjectIdAPI(userAndProjectData.projectId));
-        toast.success('Add user to this project successfully!');
-      }
-    } catch (error) {
-      if (error.response?.status === 403) {
-        toast.error('You are not the creator of this project!');
-        return rejectWithValue('You are not the creator of this project!');
-      } else {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
-    }
-  }
-);
-
-export const deleteUserFromTaskAPI = createAsyncThunk(
-  'userReducer/deleteUserFromTaskAPI',
-  async (userAndTaskData, { rejectWithValue }) => {
-    try {
-      await axiosAuth.post('/Project/removeUserFromTask', userAndTaskData);
-    } catch (error) {
-      if (error) {
-        return rejectWithValue('Something wrong happened!');
-      }
-    }
-  }
-);
-
-export const deleteUserFromProjectAPI = createAsyncThunk(
-  'userReducer/deleteUserFromProjectAPI',
-  async (userAndProjectData, { dispatch, getState, rejectWithValue }) => {
-    try {
-      const result = await axiosAuth.post(
-        '/Project/removeUserFromProject',
-        userAndProjectData
-      );
-
-      if (result?.status === 200) {
-        const { userId, projectId } = userAndProjectData;
-
-        // Refresh users list in the project
-        await dispatch(getUserByProjectIdAPI(projectId));
-
-        const state = getState();
-        const { projectDetailWithTasks } = state.projectReducer;
-
-        // Delete user from every task that has that user in
-        projectDetailWithTasks?.lstTask.forEach((list) =>
-          list.lstTaskDeTail?.forEach(async (task) => {
-            if (task.assigness.find((assignee) => assignee.id === userId)) {
-              await dispatch(
-                deleteUserFromTaskAPI({
-                  taskId: task.taskId,
-                  userId: userId,
-                })
-              );
-            }
-          })
-        );
-
-        toast.success('Delete user from this project successfully!');
-      }
-    } catch (error) {
-      if (error.response?.status === 403) {
-        toast.error('You are not the creator of this project!');
-        return rejectWithValue('You are not the creator of this project!');
-      } else {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
     }
   }
 );
@@ -308,26 +220,6 @@ export const deleteUserAPI = createAsyncThunk(
   }
 );
 
-export const getUserByProjectIdAPI = createAsyncThunk(
-  'userReducer/getUserByProjectIdAPI',
-  async (projectId, { rejectWithValue }) => {
-    try {
-      const result = await axiosAuth.get(
-        `/Users/getUserByProjectId?idProject=${projectId}`
-      );
-
-      if (result?.status === 200) {
-        return result.data.content;
-      }
-    } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
-    }
-  }
-);
-
 const initialState = {
   isLoading: false,
   userFulfilled: false,
@@ -355,6 +247,9 @@ const userReducer = createSlice({
     },
     setFalseUserFulfilledAction: (state) => {
       state.userFulfilled = false;
+    },
+    setEmptyUsersOutsideProject: (state) => {
+      state.usersOutsideProject = [];
     },
   },
   extraReducers: (builder) => {
@@ -438,40 +333,6 @@ const userReducer = createSlice({
     builder.addCase(editCurrentUserProfileAPI.rejected, (state) => {
       state.isLoading = false;
     });
-    // getUserByProjectIdAPI
-    builder.addCase(getUserByProjectIdAPI.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getUserByProjectIdAPI.fulfilled, (state, { payload }) => {
-      state.isLoading = false;
-      state.usersInProject = payload;
-    });
-    builder.addCase(getUserByProjectIdAPI.rejected, (state) => {
-      state.isLoading = false;
-    });
-
-    // addUserToProjectAPI, deleteUserFromProjectAPI
-    builder.addMatcher(
-      isAnyOf(addUserToProjectAPI.pending, deleteUserFromProjectAPI.pending),
-      (state) => {
-        state.isLoading = true;
-      }
-    );
-    builder.addMatcher(
-      isAnyOf(
-        addUserToProjectAPI.fulfilled,
-        deleteUserFromProjectAPI.fulfilled
-      ),
-      (state) => {
-        state.isLoading = false;
-      }
-    );
-    builder.addMatcher(
-      isAnyOf(addUserToProjectAPI.rejected, deleteUserFromProjectAPI.rejected),
-      (state) => {
-        state.isLoading = false;
-      }
-    );
   },
 });
 
@@ -479,6 +340,7 @@ export const {
   logoutAction,
   saveCurrentUserDataAction,
   setFalseUserFulfilledAction,
+  setEmptyUsersOutsideProject,
 } = userReducer.actions;
 
 export default userReducer.reducer;

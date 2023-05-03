@@ -136,6 +136,9 @@ const taskReducer = createSlice({
     setFalseTaskFulfilledAction: (state) => {
       state.taskFulfilled = false;
     },
+    setNullTaskDetail: (state) => {
+      state.taskDetail = null;
+    },
   },
   extraReducers: (builder) => {
     // createTaskAPI
@@ -184,6 +187,7 @@ const taskReducer = createSlice({
   },
 });
 
-export const { setFalseTaskFulfilledAction } = taskReducer.actions;
+export const { setFalseTaskFulfilledAction, setNullTaskDetail } =
+  taskReducer.actions;
 
 export default taskReducer.reducer;

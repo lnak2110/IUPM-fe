@@ -2,6 +2,10 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { axiosAuth } from '../../utils/config';
+import {
+  getAllUsersInProjectAPI,
+  getUsersOutsideProjectByKeywordAPI,
+} from './userReducer';
 
 export const getProjectsByUserAPI = createAsyncThunk(
   'projectReducer/getProjectsByUserAPI',
@@ -104,6 +108,56 @@ export const updateProjectManyMembersAPI = createAsyncThunk(
 
       if (result?.status === 200) {
         await dispatch(getProjectsByUserAPI(userId));
+        toast.success('Update project members successfully!');
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
+    }
+  }
+);
+
+export const updateProjectAddMemberAPI = createAsyncThunk(
+  'projectReducer/updateProjectAddMemberAPI',
+  async ({ id, userId, keyword }, { dispatch, rejectWithValue }) => {
+    try {
+      const result = await axiosAuth.patch(`/projects/${id}/add-member`, {
+        id: userId,
+      });
+
+      if (result?.status === 200) {
+        await dispatch(getAllUsersInProjectAPI(id));
+        await dispatch(getProjectDetailFullAPI(id));
+        // Reset users outside project list while searching
+        await dispatch(
+          getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
+        );
+        toast.success('Update project members successfully!');
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
+    }
+  }
+);
+
+export const updateProjectDeleteMemberAPI = createAsyncThunk(
+  'projectReducer/updateProjectDeleteMemberAPI',
+  async ({ id, userId, keyword }, { dispatch, rejectWithValue }) => {
+    try {
+      const result = await axiosAuth.patch(`/projects/${id}/delete-member`, {
+        id: userId,
+      });
+
+      if (result?.status === 200) {
+        await dispatch(getAllUsersInProjectAPI(id));
+        await dispatch(getProjectDetailFullAPI(id));
+        // Reset users outside project list while searching
+        await dispatch(
+          getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
+        );
         toast.success('Update project members successfully!');
       }
     } catch (error) {
@@ -235,6 +289,26 @@ const projectReducer = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateProjectManyMembersAPI.rejected, (state) => {
+      state.isLoading = false;
+    });
+    // updateProjectAddMemberAPI
+    builder.addCase(updateProjectAddMemberAPI.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProjectAddMemberAPI.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateProjectAddMemberAPI.rejected, (state) => {
+      state.isLoading = false;
+    });
+    // updateProjectDeleteMemberAPI
+    builder.addCase(updateProjectDeleteMemberAPI.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProjectDeleteMemberAPI.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateProjectDeleteMemberAPI.rejected, (state) => {
       state.isLoading = false;
     });
     // getProjectDetailAPI & updateProjectAPI
