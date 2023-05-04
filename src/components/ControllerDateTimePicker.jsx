@@ -9,7 +9,7 @@ const ControllerDateTimePicker = ({
   maxDateTime,
   margin = 'dense',
   readonly = false,
-  isRequired = true,
+  isRequired = false,
 }) => {
   return (
     <Controller

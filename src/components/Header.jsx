@@ -1,12 +1,12 @@
 import { matchPath, NavLink, useLocation } from 'react-router-dom';
 import { logoutAction } from '../redux/reducers/userReducer';
 import { theme } from '../App';
-// import UserProfile from './UserProfile';
 import DialogModal from './DialogModal';
+import UserAvatar from './UserAvatar';
+import UserProfile from './UserProfile';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Box from '@mui/material/Box';
@@ -18,7 +18,6 @@ import Paper from '@mui/material/Paper';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
 import {
@@ -91,6 +90,7 @@ const Header = () => {
           >
             JIRAK
           </Typography>
+
           {downSm ? (
             <Paper
               sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
@@ -122,9 +122,9 @@ const Header = () => {
                 <Tab
                   key={page.name}
                   label={page.name}
-                  component={NavLink}
                   to={page.route}
                   value={page.route}
+                  component={NavLink}
                   sx={{
                     mr: 1,
                     py: 3,
@@ -139,14 +139,13 @@ const Header = () => {
           )}
 
           <Box {...bindTrigger(popupState)}>
-            <Tooltip title="Open settings">
-              <IconButton sx={{ p: 0 }}>
-                <Avatar
-                  alt={currentUserData?.name}
-                  src={currentUserData?.avatar}
-                />
-              </IconButton>
-            </Tooltip>
+            <IconButton sx={{ p: 0 }}>
+              <UserAvatar
+                name={currentUserData?.name}
+                avatar={currentUserData?.avatar}
+                tooltip="Open settings"
+              />
+            </IconButton>
           </Box>
           <Menu
             {...bindMenu(popupState)}
@@ -154,7 +153,7 @@ const Header = () => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            {/* <DialogModal
+            <DialogModal
               buttonOpen={
                 <MenuItem>
                   <Typography textAlign="center">Profile</Typography>
@@ -166,7 +165,7 @@ const Header = () => {
               preventCloseBackdrop
             >
               <UserProfile />
-            </DialogModal> */}
+            </DialogModal>
             <MenuItem onClick={handleLogout}>
               <Typography textAlign="center">Logout</Typography>
             </MenuItem>

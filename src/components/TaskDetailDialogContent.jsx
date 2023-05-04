@@ -67,7 +67,7 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
       name: taskDetail?.name || '',
       listId: taskDetail?.listId || '',
       taskMembers: taskDetail?.taskMembers?.map(({ user }) => user) || [],
-      deadline: new Date(taskDetail?.deadline) || null,
+      deadline: (taskDetail?.deadline && new Date(taskDetail.deadline)) || null,
       description: taskDetail?.description || '',
     }),
     [taskDetail]

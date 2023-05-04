@@ -5,6 +5,7 @@ import useTitle from '../../hooks/useTitle';
 import {
   deleteProjectAPI,
   getProjectsByUserAPI,
+  updateProjectToggleDone,
 } from '../../redux/reducers/projectReducer';
 import { theme } from '../../App';
 import DialogModal from '../../components/DialogModal';
@@ -12,12 +13,18 @@ import Loading from '../../components/Loading';
 import MUIDataGrid from '../../components/MUIDataGrid';
 import ProjectUsersDialogContent from '../../components/ProjectUsersDialogContent';
 import UserAvatar from '../../components/UserAvatar';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DoneIcon from '@mui/icons-material/Done';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import EditIcon from '@mui/icons-material/Edit';
+import HourglassFullIcon from '@mui/icons-material/HourglassFull';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PendingIcon from '@mui/icons-material/Pending';
+import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -33,8 +40,9 @@ import {
   usePopupState,
 } from 'material-ui-popup-state/hooks';
 import { useConfirm } from 'material-ui-confirm';
+import { compareAsc } from 'date-fns';
 
-const RowActionsMenu = ({ project, currentUserId }) => {
+const RowActionsMenu = ({ project, currentUserId, isDone }) => {
   const dispatch = useDispatch();
 
   const popupState = usePopupState({
@@ -44,7 +52,13 @@ const RowActionsMenu = ({ project, currentUserId }) => {
 
   const confirm = useConfirm();
 
-  const handleDeleteProject = (project) => {
+  const handleUpdateProjectToggleDone = () => {
+    dispatch(
+      updateProjectToggleDone({ id: project.id, userId: currentUserId, isDone })
+    );
+  };
+
+  const handleDeleteProject = () => {
     confirm({
       title: `Delete project "${project.name}"?`,
       titleProps: { sx: { wordWrap: 'break-word' } },
@@ -68,13 +82,19 @@ const RowActionsMenu = ({ project, currentUserId }) => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
+        <MenuItem onClick={() => handleUpdateProjectToggleDone()}>
+          <ListItemIcon>
+            {isDone ? <RemoveDoneIcon /> : <DoneAllIcon />}
+          </ListItemIcon>
+          <ListItemText>{`Set ${isDone ? 'Not Done' : 'Done'}`}</ListItemText>
+        </MenuItem>
         <MenuItem component={NavLink} to={`/projects/${project.id}/update`}>
           <ListItemIcon>
             <EditIcon />
           </ListItemIcon>
           <ListItemText>Update</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => handleDeleteProject(project)}>
+        <MenuItem onClick={() => handleDeleteProject()}>
           <ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
@@ -83,6 +103,42 @@ const RowActionsMenu = ({ project, currentUserId }) => {
       </Menu>
     </>
   );
+};
+
+const renderStatus = (isDone, deadline) => {
+  if (isDone) {
+    return (
+      <Chip
+        label="Done"
+        size="small"
+        variant="outlined"
+        color="success"
+        icon={<DoneIcon />}
+      />
+    );
+  } else {
+    if (compareAsc(new Date(deadline), new Date()) === 1 || !deadline) {
+      return (
+        <Chip
+          label="Doing"
+          size="small"
+          variant="outlined"
+          color="blueGrey"
+          icon={<PendingIcon />}
+        />
+      );
+    } else {
+      return (
+        <Chip
+          label="Late"
+          size="small"
+          variant="outlined"
+          color="error"
+          icon={<HourglassFullIcon />}
+        />
+      );
+    }
+  }
 };
 
 const Projects = () => {
@@ -122,7 +178,9 @@ const Projects = () => {
         flex: 1,
         renderCell: ({ value }) => (
           <Tooltip title={value}>
-            <Typography noWrap>{value}</Typography>
+            <Typography fontSize={theme.typography.fontSize} noWrap>
+              {value}
+            </Typography>
           </Tooltip>
         ),
       },
@@ -133,6 +191,13 @@ const Projects = () => {
         minWidth: 200,
         flex: 1.2,
         valueGetter: ({ value }) => value && new Date(value),
+      },
+      {
+        field: 'isDone',
+        headerName: 'Status',
+        minWidth: 100,
+        flex: 0.6,
+        renderCell: (params) => renderStatus(params.value, params.row.deadline),
       },
       {
         field: 'leader',
@@ -207,6 +272,7 @@ const Projects = () => {
             <RowActionsMenu
               project={params.row}
               currentUserId={currentUserData?.id}
+              isDone={params.row.isDone}
             />
           ),
       },
@@ -222,6 +288,7 @@ const Projects = () => {
           name,
           description,
           deadline,
+          isDone,
           leader,
           _count: { projectMembers },
         } = p.project;
@@ -231,6 +298,7 @@ const Projects = () => {
           name,
           description,
           deadline,
+          isDone,
           leader,
           projectMembers,
         };

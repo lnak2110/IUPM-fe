@@ -53,37 +53,8 @@ export const loginSchema = yup
 
 export const projectSchema = yup
   .object()
-  .shape({
-    name: yup
-      .string()
-      .trim()
-      .required('Name cannot be blank!')
-      .max(20, 'Name must be no more than 20 characters!'),
-    description: yup
-      .string()
-      .trim()
-      .stripEmptyString()
-      .max(255, 'Description must be no more than 255 characters!')
-      .nullable()
-      .default(null),
-    deadline: yup
-      .date()
-      .transform((_value, originalValue) => {
-        const parsedDate = isDate(originalValue)
-          ? originalValue
-          : parse(originalValue, "yyyy-MM-dd'T'HH:mm:ss", new Date());
-
-        return parsedDate;
-      })
-      .typeError('Invalid date!')
-      .min(new Date(Date.now()), 'Deadline must be later than now!'),
-  })
-  .required();
-
-export const taskSchema = (projectDeadline, isNewTask = true) =>
-  yup
-    .object()
-    .shape({
+  .shape(
+    {
       name: yup
         .string()
         .trim()
@@ -92,35 +63,84 @@ export const taskSchema = (projectDeadline, isNewTask = true) =>
       description: yup
         .string()
         .trim()
-        .transform((value, originalValue) =>
-          originalValue?.replace(/<(.|\n)*?>/g, '').trim().length === 0
-            ? null
-            : value
-        )
+        .stripEmptyString()
+        .max(255, 'Description must be no more than 255 characters!')
         .nullable()
-        .max(255, 'Description must be no more than 255 characters!'),
-      deadline: yup
-        .date()
-        .transform((_value, originalValue) => {
-          const parsedDate = isDate(originalValue)
-            ? originalValue
-            : parse(originalValue, "yyyy-MM-dd'T'HH:mm:ss", new Date());
+        .default(null),
 
-          return parsedDate;
-        })
-        .typeError('Invalid date!')
-        .min(new Date(Date.now()), 'Deadline must be later than now!')
-        .max(
-          new Date(projectDeadline),
-          'Deadline must not be later than project deadline!'
-        ),
+      deadline: yup.date().when('deadline', ([value]) => {
+        if (value) {
+          return yup
+            .date()
+            .transform((_value, originalValue) => {
+              const parsedDate = isDate(originalValue)
+                ? originalValue
+                : parse(originalValue, "yyyy-MM-dd'T'HH:mm:ss", new Date());
 
-      ...(isNewTask && {
-        listProjectId: yup.string().trim().uuid().required(),
+              return parsedDate;
+            })
+            .typeError('Invalid date!')
+            .min(new Date(), 'Deadline must be later than now!');
+        } else {
+          return yup.date().nullable().default(null);
+        }
       }),
+    },
+    [['deadline', 'deadline']] // Cyclic dependency yup.when()
+  )
+  .required();
 
-      taskMembers: yup.array().required(),
-    })
+export const taskSchema = (projectDeadline, isNewTask = true) =>
+  yup
+    .object()
+    .shape(
+      {
+        name: yup
+          .string()
+          .trim()
+          .required('Name cannot be blank!')
+          .max(20, 'Name must be no more than 20 characters!'),
+        description: yup
+          .string()
+          .trim()
+          .transform((value, originalValue) =>
+            originalValue?.replace(/<(.|\n)*?>/g, '').trim().length === 0
+              ? null
+              : value
+          )
+          .nullable()
+          .max(255, 'Description must be no more than 255 characters!'),
+
+        deadline: yup.date().when('deadline', ([value]) => {
+          if (value) {
+            return yup
+              .date()
+              .transform((_value, originalValue) => {
+                const parsedDate = isDate(originalValue)
+                  ? originalValue
+                  : parse(originalValue, "yyyy-MM-dd'T'HH:mm:ss", new Date());
+
+                return parsedDate;
+              })
+              .typeError('Invalid date!')
+              .min(new Date(), 'Deadline must be later than now!')
+              .max(
+                new Date(projectDeadline),
+                'Deadline must not be later than project deadline!'
+              );
+          } else {
+            return yup.date().nullable().default(null);
+          }
+        }),
+
+        ...(isNewTask && {
+          listProjectId: yup.string().trim().uuid().required(),
+        }),
+
+        taskMembers: yup.array().required(),
+      },
+      [['deadline', 'deadline']]
+    )
     .required();
 
 export const commentSchema = (isNewComment = true) =>
@@ -141,3 +161,32 @@ export const commentSchema = (isNewComment = true) =>
       ...(isNewComment && { taskId: yup.string().trim().uuid().required() }),
     })
     .required();
+
+export const userSchema = yup
+  .object()
+  .shape({
+    name: yup
+      .string()
+      .trim()
+      .required('Name cannot be blank!')
+      .max(20, 'Name must be no more than 20 characters!'),
+    email: yup
+      .string()
+      .trim()
+      .required('Email cannot be blank!')
+      .email('Email is invalid!'),
+    avatar: yup
+      .string()
+      .trim()
+      .stripEmptyString()
+      .url()
+      .nullable()
+      .default(null),
+    password: yup
+      .string()
+      .trim()
+      .required('Password cannot be blank!')
+      .min(4, 'Password must be 4 characters or more!')
+      .max(10, 'Character limit exceeded!'),
+  })
+  .required();

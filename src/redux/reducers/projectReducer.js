@@ -27,9 +27,11 @@ export const createProjectAPI = createAsyncThunk(
   'projectReducer/createProjectAPI',
   async (createProjectData, { rejectWithValue }) => {
     try {
+      const { deadline, ...restData } = createProjectData;
+
       const data = {
-        ...createProjectData,
-        deadline: format(createProjectData.deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        ...restData,
+        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
       };
 
       const result = await axiosAuth.post('/projects/', data);
@@ -167,16 +169,38 @@ export const updateProjectDeleteMemberAPI = createAsyncThunk(
   }
 );
 
+export const updateProjectToggleDone = createAsyncThunk(
+  'projectReducer/updateProjectToggleDone',
+  async ({ id, userId, isDone }, { dispatch, rejectWithValue }) => {
+    try {
+      const result = await axiosAuth.patch(`/projects/${id}/toggle-done`);
+
+      if (result?.status === 200) {
+        await dispatch(getProjectsByUserAPI(userId));
+        toast.success(
+          `Set a project ${isDone ? 'not done' : 'done'} successfully!`
+        );
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
+    }
+  }
+);
+
 export const updateProjectAPI = createAsyncThunk(
   'projectReducer/updateProjectAPI',
   async (editProjectData, { dispatch, rejectWithValue }) => {
     try {
+      const { id, deadline, ...restData } = editProjectData;
+
       const data = {
-        ...editProjectData,
-        deadline: format(editProjectData.deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        ...restData,
+        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
       };
 
-      const result = await axiosAuth.put(`/projects/${data.id}`, data);
+      const result = await axiosAuth.put(`/projects/${id}`, data);
 
       if (result?.status === 200) {
         await dispatch(getProjectDetailAPI(data.id));
@@ -298,6 +322,16 @@ const projectReducer = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateProjectDeleteMemberAPI.rejected, (state) => {
+      state.isLoading = false;
+    });
+    // updateProjectToggleDone
+    builder.addCase(updateProjectToggleDone.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProjectToggleDone.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateProjectToggleDone.rejected, (state) => {
       state.isLoading = false;
     });
     // getProjectDetailAPI & updateProjectAPI
