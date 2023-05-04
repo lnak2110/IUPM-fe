@@ -17,7 +17,13 @@ import Register from './pages/register/Register';
 import UpdateProject from './pages/updateProject/UpdateProject';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { cyan, deepPurple, green, indigo } from '@mui/material/colors';
+import {
+  blueGrey,
+  cyan,
+  deepPurple,
+  green,
+  indigo,
+} from '@mui/material/colors';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ConfirmProvider } from 'material-ui-confirm';
@@ -26,6 +32,10 @@ import 'react-toastify/dist/ReactToastify.min.css';
 
 export const theme = createTheme({
   palette: {
+    blueGrey: {
+      main: blueGrey[500],
+      contrastText: '#fff',
+    },
     cyan: {
       main: cyan[700],
       contrastText: '#fff',

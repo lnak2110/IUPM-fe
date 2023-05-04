@@ -35,7 +35,6 @@ const CreateProject = () => {
 
   const onSubmit = (data) => {
     dispatch(createProjectAPI(data));
-    console.log(data);
   };
 
   useEffect(() => {

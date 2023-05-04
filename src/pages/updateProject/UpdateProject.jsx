@@ -24,7 +24,8 @@ const UpdateProject = () => {
   const initialValues = useMemo(
     () => ({
       name: projectDetail?.name || '',
-      deadline: new Date(projectDetail?.deadline) || null,
+      deadline:
+        (projectDetail?.deadline && new Date(projectDetail.deadline)) || null,
       description: projectDetail?.description || '',
     }),
     [projectDetail]

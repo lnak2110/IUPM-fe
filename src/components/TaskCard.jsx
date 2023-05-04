@@ -100,17 +100,19 @@ const TaskCard = ({ task, index }) => {
               <CardContent
                 sx={{
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: task.deadline ? 'space-between' : 'flex-end',
                   alignItems: 'center',
                   '&.MuiCardContent-root': { pb: 2 },
                 }}
               >
-                <Chip
-                  color="indigo"
-                  size="small"
-                  variant="outlined"
-                  label={format(new Date(task.deadline), 'MM-dd-yyyy HH:mm')}
-                />
+                {task.deadline && (
+                  <Chip
+                    color="indigo"
+                    size="small"
+                    variant="outlined"
+                    label={format(new Date(task.deadline), 'MM-dd-yyyy HH:mm')}
+                  />
+                )}
                 {task.taskMembers?.length ? (
                   <Tooltip
                     title={`${task.taskMembers?.length} member${

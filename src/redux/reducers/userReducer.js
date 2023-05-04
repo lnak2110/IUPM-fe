@@ -115,107 +115,41 @@ export const getUsersOutsideProjectByKeywordAPI = createAsyncThunk(
   }
 );
 
-export const getUserByIdAPI = createAsyncThunk(
-  'userReducer/getUserByIdAPI',
-  async (userId, { rejectWithValue }) => {
+export const getUserAPI = createAsyncThunk(
+  'userReducer/getUserAPI',
+  async (id, { rejectWithValue }) => {
     try {
-      const result = await axiosAuth.get(`/Users/getUser?keyword=${userId}`);
+      const result = await axiosAuth.get(`/users/${id}`);
 
       if (result?.status === 200) {
-        const allUsersFound = result?.data?.content;
-        const userFound = allUsersFound.find((user) => user.userId === +userId);
-        if (userFound) {
-          return userFound;
-        }
-        return null;
+        return result?.data?.content;
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
 
-export const editCurrentUserProfileAPI = createAsyncThunk(
-  'userReducer/editCurrentUserProfileAPI',
-  async (editUserFormInputs, { dispatch, getState, rejectWithValue }) => {
+export const updateCurrentUserAPI = createAsyncThunk(
+  'userReducer/updateCurrentUserAPI',
+  async (updateCurrentUserData, { dispatch, rejectWithValue }) => {
     try {
-      const result = await axiosAuth.put('/Users/editUser', editUserFormInputs);
+      const { id, ...restData } = updateCurrentUserData;
+
+      const result = await axiosAuth.patch(`/users/${id}`, restData);
 
       if (result?.status === 200) {
-        await dispatch(getUserByIdAPI(editUserFormInputs.id));
+        await dispatch(getUserAPI(id));
 
-        const state = getState();
-        const { userFound } = state.userReducer;
-        dispatch(
-          saveCurrentUserDataAction({
-            ...userFound,
-            id: userFound.userId,
-          })
-        );
+        dispatch(saveCurrentUserDataAction(result?.data?.content));
         toast.success('Update user information successfully!');
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
-    }
-  }
-);
-
-export const editUserAPI = createAsyncThunk(
-  'userReducer/editUserAPI',
-  async (editUserFormInputs, { dispatch, getState, rejectWithValue }) => {
-    try {
-      const result = await axiosAuth.put('/Users/editUser', editUserFormInputs);
-
-      if (result?.status === 200) {
-        await dispatch(getUserByIdAPI(editUserFormInputs.id));
-
-        const state = getState();
-        const { userFound } = state.userReducer;
-        const { currentUserData } = state.userReducer;
-
-        // Update current user if edited
-        if (userFound.userId === currentUserData.id) {
-          dispatch(
-            saveCurrentUserDataAction({
-              ...userFound,
-              id: userFound.userId,
-            })
-          );
-        }
-
-        await dispatch(getAllUsersInProjectAPI());
-        toast.success('Update user information successfully!');
-      }
-    } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
-    }
-  }
-);
-
-export const deleteUserAPI = createAsyncThunk(
-  'userReducer/deleteUserAPI',
-  async (id, { dispatch, rejectWithValue }) => {
-    try {
-      const result = await axiosAuth.delete(`/Users/deleteUser?id=${id}`);
-
-      if (result?.status === 200) {
-        await dispatch(getAllUsersInProjectAPI());
-        toast.success('Delete user successfully!');
-      }
-    } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -311,26 +245,26 @@ const userReducer = createSlice({
     builder.addCase(getUsersOutsideProjectByKeywordAPI.rejected, (state) => {
       state.isLoading = false;
     });
-    // getUserByIdAPI
-    builder.addCase(getUserByIdAPI.pending, (state) => {
+    // getUserAPI
+    builder.addCase(getUserAPI.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(getUserByIdAPI.fulfilled, (state, { payload }) => {
+    builder.addCase(getUserAPI.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       state.userFound = payload;
     });
-    builder.addCase(getUserByIdAPI.rejected, (state) => {
+    builder.addCase(getUserAPI.rejected, (state) => {
       state.isLoading = false;
     });
-    // editCurrentUserProfileAPI
-    builder.addCase(editCurrentUserProfileAPI.pending, (state) => {
+    // updateCurrentUserAPI
+    builder.addCase(updateCurrentUserAPI.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(editCurrentUserProfileAPI.fulfilled, (state) => {
+    builder.addCase(updateCurrentUserAPI.fulfilled, (state) => {
       state.isLoading = false;
       state.userFulfilled = true;
     });
-    builder.addCase(editCurrentUserProfileAPI.rejected, (state) => {
+    builder.addCase(updateCurrentUserAPI.rejected, (state) => {
       state.isLoading = false;
     });
   },

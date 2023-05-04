@@ -7,11 +7,13 @@ import { getProjectDetailFullAPI } from './projectReducer';
 export const createTaskAPI = createAsyncThunk(
   'taskReducer/createTaskAPI',
   async (createTaskData, { dispatch, rejectWithValue }) => {
+    const { taskMembers, deadline, ...restData } = createTaskData;
+
     try {
       const data = {
-        ...createTaskData,
-        taskMembers: createTaskData.taskMembers?.map((user) => user.id),
-        deadline: format(createTaskData.deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        ...restData,
+        taskMembers: taskMembers?.map((user) => user.id),
+        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
       };
 
       const result = await axiosAuth.post('/tasks', data);
