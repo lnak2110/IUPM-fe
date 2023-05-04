@@ -114,8 +114,8 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
             <Grid item xs={12}>
               <ControllerTextField
                 control={control}
-                id="update-task-name"
                 name="name"
+                id="update-task-name"
                 label="Task Name"
               />
             </Grid>
@@ -133,8 +133,8 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
             <Grid item xs={12}>
               <ControllerAutocomplete
                 control={control}
-                id="update-task-members"
                 name="taskMembers"
+                id="update-task-members"
                 label="Members"
                 placeholder="Choose task members..."
                 options={projectDetailFull.projectMembers?.map(
@@ -172,8 +172,8 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
               </Typography>
               <ControllerEditor
                 control={control}
-                id="update-task-description"
                 name="description"
+                id="update-task-description"
                 placeholder="Describe the task..."
               />
             </Grid>

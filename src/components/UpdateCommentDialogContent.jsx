@@ -57,8 +57,8 @@ const UpdateCommentDialogContent = ({ comment }) => {
       >
         <ControllerEditor
           control={control}
-          id="update-comment-content"
           name="content"
+          id="update-comment-content"
           placeholder="Leave a comment..."
         />
         <Button type="submit" variant="contained" disabled={isSubmitting}>

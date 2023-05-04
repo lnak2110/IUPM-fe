@@ -5,8 +5,8 @@ import TextField from '@mui/material/TextField';
 
 const ControllerAutocomplete = ({
   control,
-  id,
   name,
+  id,
   label,
   placeholder,
   options,

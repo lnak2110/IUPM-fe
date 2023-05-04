@@ -3,8 +3,8 @@ import TextField from '@mui/material/TextField';
 
 const ControllerTextField = ({
   control,
-  id,
   name,
+  id,
   label,
   placeholder,
   margin = 'dense',
