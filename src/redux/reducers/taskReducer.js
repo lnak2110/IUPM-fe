@@ -17,11 +17,10 @@ export const createTaskAPI = createAsyncThunk(
       const result = await axiosAuth.post('/tasks', data);
 
       if (result?.status === 200) {
-        dispatch(getProjectDetailFullAPI(data.listProjectId));
+        await dispatch(getProjectDetailFullAPI(data.listProjectId));
         toast.success('Create a task successfully!');
       }
     } catch (error) {
-      console.log(error);
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
@@ -44,11 +43,10 @@ export const updateTaskListAPI = createAsyncThunk(
         dispatch(getProjectDetailFullAPI(projectId));
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        dispatch(getProjectDetailFullAPI(projectId));
-        return rejectWithValue('Something wrong happened!');
-      }
+      dispatch(getProjectDetailFullAPI(projectId));
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -63,10 +61,9 @@ export const getTaskDetailAPI = createAsyncThunk(
         return result.data.content;
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -91,7 +88,6 @@ export const updateTaskAPI = createAsyncThunk(
         toast.success('Update a task successfully!');
       }
     } catch (error) {
-      console.log(error);
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );

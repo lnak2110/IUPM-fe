@@ -1,12 +1,15 @@
+import { useDispatch, useSelector } from 'react-redux';
 import parse from 'html-react-parser';
 import { deleteCommentAPI } from '../redux/reducers/commentReducer';
+import DialogModal from './DialogModal';
+import UpdateCommentDialogContent from './UpdateCommentDialogContent';
+import UserAvatar from './UserAvatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -19,13 +22,12 @@ import {
   bindTrigger,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
-import DialogModal from './DialogModal';
-import UpdateCommentDialogContent from './UpdateCommentDialogContent';
 import { useConfirm } from 'material-ui-confirm';
-import { useDispatch, useSelector } from 'react-redux';
+import { format } from 'date-fns';
 
 const CommentCard = ({ comment }) => {
   const { currentUserData } = useSelector((state) => state.userReducer);
+
   const dispatch = useDispatch();
 
   const popupState = usePopupState({
@@ -35,20 +37,14 @@ const CommentCard = ({ comment }) => {
 
   const confirm = useConfirm();
 
-  const isCommentOfCurrentUser = (userId) => {
-    if (userId === currentUserData?.id) {
-      return true;
-    }
-  };
-
-  const handleDeleteComment = (idComment) => {
+  const handleDeleteComment = () => {
     confirm({
       title: 'Delete this comment?',
     })
       .then(() => {
         dispatch(
           deleteCommentAPI({
-            idComment,
+            id: comment.id,
             taskId: comment.taskId,
           })
         );
@@ -62,18 +58,28 @@ const CommentCard = ({ comment }) => {
         disableTypography
         sx={{
           '& .MuiCardHeader-content': {
-            display: 'flex',
+            // display: 'flex',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
           },
         }}
-        avatar={<Avatar alt={comment.user.name} src={comment.user.avatar} />}
+        avatar={
+          <UserAvatar
+            name={comment.author.name}
+            avatar={comment.author.avatar}
+          />
+        }
         title={
-          <Tooltip title={comment.user.name}>
-            <Typography noWrap>{comment.user.name}</Typography>
+          <Tooltip title={comment.author.email}>
+            <Typography noWrap>{comment.author.email}</Typography>
           </Tooltip>
         }
-        {...(isCommentOfCurrentUser(comment.userId) && {
+        subheader={
+          <Typography variant="caption">
+            {format(new Date(comment.createdAt), 'MM-dd-yyyy HH:mm')}
+          </Typography>
+        }
+        {...(comment.authorId === currentUserData?.id && {
           action: (
             <IconButton aria-label="more actions" {...bindTrigger(popupState)}>
               <MoreVertIcon />
@@ -83,7 +89,7 @@ const CommentCard = ({ comment }) => {
       />
       <CardContent sx={{ '&.MuiCardContent-root': { py: 0 } }}>
         <Typography component={'div'} variant="body2" color="text.secondary">
-          {parse(comment.contentComment)}
+          {parse(comment.content)}
         </Typography>
       </CardContent>
       <Menu
@@ -99,12 +105,12 @@ const CommentCard = ({ comment }) => {
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
-              <ListItemText>Edit</ListItemText>
+              <ListItemText>Update</ListItemText>
             </MenuItem>
           }
-          title="Edit your comment"
-          popupId="editCommentDialog"
-          ariaLabel="edit-comment-dialog"
+          title="Update your comment"
+          popupId="updateCommentDialog"
+          ariaLabel="update-comment-dialog"
           maxWidthValue="sm"
           heightValue="270px"
         >

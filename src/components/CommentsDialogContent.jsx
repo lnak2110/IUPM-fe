@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { theme } from '../App';
 import {
-  addCommentToTaskAPI,
-  getAllCommentsAPI,
+  createCommentAPI,
+  getCommentsByTaskAPI,
   setFalseCommentFulfilledAction,
 } from '../redux/reducers/commentReducer';
+import { commentSchema } from '../utils/validation';
+import { theme } from '../App';
 import CommentCard from './CommentCard';
 import ControllerEditor from './ControllerEditor';
+import UserAvatar from './UserAvatar';
 import ModeCommentOutlinedIcon from '@mui/icons-material/ModeCommentOutlined';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import DialogContent from '@mui/material/DialogContent';
 import Grid from '@mui/material/Grid';
@@ -22,31 +23,17 @@ import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const commentSchemaYup = yup
-  .object()
-  .shape({
-    contentComment: yup
-      .string()
-      .test('isCommentEmpty', 'Comment cannot be blank!', (comment) => {
-        if (comment?.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-          return false;
-        }
-        return true;
-      }),
-  })
-  .required();
 
 const CommentsDialogContent = ({ taskId }) => {
   const { currentUserData } = useSelector((state) => state.userReducer);
-  const { allCommentsInTask, commentFulfilled, isLoading } = useSelector(
+  const { commentsInTask, commentFulfilled, isLoading } = useSelector(
     (state) => state.commentReducer
   );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllCommentsAPI(taskId));
+    dispatch(getCommentsByTaskAPI(taskId));
   }, [dispatch, taskId]);
 
   const up300 = useMediaQuery(theme.breakpoints.up(300));
@@ -59,10 +46,10 @@ const CommentsDialogContent = ({ taskId }) => {
   } = useForm({
     defaultValues: {
       taskId: taskId || '',
-      contentComment: '',
+      content: '',
     },
     mode: 'onSubmit',
-    resolver: yupResolver(commentSchemaYup),
+    resolver: yupResolver(commentSchema()),
   });
 
   useEffect(() => {
@@ -73,7 +60,7 @@ const CommentsDialogContent = ({ taskId }) => {
   }, [dispatch, reset, commentFulfilled]);
 
   const onSubmit = (data) => {
-    dispatch(addCommentToTaskAPI(data));
+    dispatch(createCommentAPI(data));
   };
 
   return (
@@ -84,16 +71,13 @@ const CommentsDialogContent = ({ taskId }) => {
         flexDirection={{ xs: 'column-reverse', md: 'row' }}
       >
         <Grid item xs={12} md={6}>
-          {allCommentsInTask.length ? (
+          {commentsInTask?.length ? (
             <List>
-              {allCommentsInTask
-                .slice(0)
-                .reverse()
-                .map((comment) => (
-                  <ListItem key={comment.id} sx={{ display: 'block' }}>
-                    <CommentCard comment={comment} />
-                  </ListItem>
-                ))}
+              {commentsInTask.map((comment) => (
+                <ListItem key={comment.id} sx={{ display: 'block' }}>
+                  <CommentCard comment={comment} />
+                </ListItem>
+              ))}
             </List>
           ) : (
             <Typography
@@ -126,7 +110,8 @@ const CommentsDialogContent = ({ taskId }) => {
           >
             <ControllerEditor
               control={control}
-              name="contentComment"
+              id="create-comment-content"
+              name="content"
               placeholder="Leave a comment..."
             />
             <Stack
@@ -139,12 +124,12 @@ const CommentsDialogContent = ({ taskId }) => {
                 spacing={2}
                 sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
               >
-                <Avatar
-                  alt={currentUserData?.name}
-                  src={currentUserData?.avatar}
+                <UserAvatar
+                  name={currentUserData?.name}
+                  avatar={currentUserData?.avatar}
                 />
-                <Tooltip title={currentUserData?.name}>
-                  <Typography noWrap>{currentUserData?.name}</Typography>
+                <Tooltip title={currentUserData?.email}>
+                  <Typography noWrap>{currentUserData?.email}</Typography>
                 </Tooltip>
               </Stack>
               <Button type="submit" variant="contained" disabled={isSubmitting}>

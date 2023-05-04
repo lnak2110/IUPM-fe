@@ -1,15 +1,15 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { commentSchemaYup } from './CommentsDialogContent';
+import { updateCommentAPI } from '../redux/reducers/commentReducer';
+import { commentSchema } from '../utils/validation';
 import { theme } from '../App';
-import Loading from './Loading';
 import ControllerEditor from './ControllerEditor';
+import Loading from './Loading';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogContent from '@mui/material/DialogContent';
 import { useMediaQuery } from '@mui/material';
-import { editCommentAPI } from '../redux/reducers/commentReducer';
-import { useDispatch, useSelector } from 'react-redux';
 
 const UpdateCommentDialogContent = ({ comment }) => {
   const { isLoading } = useSelector((state) => state.commentReducer);
@@ -24,16 +24,20 @@ const UpdateCommentDialogContent = ({ comment }) => {
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      taskId: comment.taskId || 0,
-      id: comment.id || 0,
-      contentComment: comment.contentComment || '',
+      content: comment.content || '',
     },
     mode: 'onSubmit',
-    resolver: yupResolver(commentSchemaYup),
+    resolver: yupResolver(commentSchema(false)),
   });
 
   const onSubmit = (data) => {
-    dispatch(editCommentAPI(data));
+    dispatch(
+      updateCommentAPI({
+        ...data,
+        id: comment.id,
+        taskId: comment.taskId,
+      })
+    );
   };
 
   return (
@@ -53,7 +57,8 @@ const UpdateCommentDialogContent = ({ comment }) => {
       >
         <ControllerEditor
           control={control}
-          name="contentComment"
+          id="update-comment-content"
+          name="content"
           placeholder="Leave a comment..."
         />
         <Button type="submit" variant="contained" disabled={isSubmitting}>

@@ -47,7 +47,7 @@ export const loginAPI = createAsyncThunk(
         };
 
         setStore(process.env.REACT_APP_CURRENT_USER_DATA, currentUserData);
-        setStore(process.env.REACT_APP_USER_LOGIN, { email, accessToken });
+        setStore(process.env.REACT_APP_USER_LOGGED_IN, { email, accessToken });
 
         dispatch(saveCurrentUserDataAction(currentUserData));
         toast.success(`Log in successfully! Welcome ${name}!`);
@@ -225,7 +225,7 @@ const initialState = {
   userFulfilled: false,
   currentUserData:
     getStoreJson(process.env.REACT_APP_CURRENT_USER_DATA) || null,
-  userLogin: getStoreJson(process.env.REACT_APP_USER_LOGIN) || null,
+  userLoggedIn: getStoreJson(process.env.REACT_APP_USER_LOGGED_IN) || null,
   users: [],
   usersInProject: [],
   usersOutsideProject: [],
@@ -237,9 +237,9 @@ const userReducer = createSlice({
   initialState,
   reducers: {
     logoutAction: (state) => {
-      state.userLogin = null;
+      state.userLoggedIn = null;
       eraseStore(process.env.REACT_APP_CURRENT_USER_DATA);
-      eraseStore(process.env.REACT_APP_USER_LOGIN);
+      eraseStore(process.env.REACT_APP_USER_LOGGED_IN);
     },
     saveCurrentUserDataAction: (state, { payload }) => {
       state.currentUserData = payload;
@@ -269,7 +269,7 @@ const userReducer = createSlice({
     });
     builder.addCase(loginAPI.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.userLogin = action.payload;
+      state.userLoggedIn = action.payload;
       router.navigate('/projects');
     });
     builder.addCase(loginAPI.rejected, (state) => {

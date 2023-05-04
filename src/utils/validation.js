@@ -122,3 +122,22 @@ export const taskSchema = (projectDeadline, isNewTask = true) =>
       taskMembers: yup.array().required(),
     })
     .required();
+
+export const commentSchema = (isNewComment = true) =>
+  yup
+    .object()
+    .shape({
+      content: yup
+        .string()
+        .trim()
+        .test('isCommentEmpty', 'Comment cannot be blank!', (comment) => {
+          if (comment?.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+            return false;
+          }
+          return true;
+        })
+        .max(255, 'Comment must be no more than 255 characters!'),
+
+      ...(isNewComment && { taskId: yup.string().trim().uuid().required() }),
+    })
+    .required();

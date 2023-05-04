@@ -1,20 +1,20 @@
 import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { updateProjectManyMembersAPI } from '../redux/reducers/projectReducer';
 import {
   getAllUsersAPI,
   getAllUsersInProjectAPI,
 } from '../redux/reducers/userReducer';
 import { theme } from '../App';
+import ControllerAutocompleteFixedOption from './ControllerAutocompleteFixedOption';
 import Loading from './Loading';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import Divider from '@mui/material/Divider';
 import { useMediaQuery } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateProjectManyMembersAPI } from '../redux/reducers/projectReducer';
-import ControllerAutocompleteFixedOption from './ControllerAutocompleteFixedOption';
 
 const ProjectUsersDialogContent = ({
   projectId,

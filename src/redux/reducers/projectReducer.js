@@ -38,7 +38,6 @@ export const createProjectAPI = createAsyncThunk(
         toast.success('Create a project successfully!');
       }
     } catch (error) {
-      console.log(error);
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
@@ -178,14 +177,12 @@ export const updateProjectAPI = createAsyncThunk(
       };
 
       const result = await axiosAuth.put(`/projects/${data.id}`, data);
-      console.log(result);
 
       if (result?.status === 200) {
         await dispatch(getProjectDetailAPI(data.id));
         toast.success('Update a project successfully!');
       }
     } catch (error) {
-      console.log(error);
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );

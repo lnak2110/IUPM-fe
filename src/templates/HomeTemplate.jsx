@@ -4,9 +4,9 @@ import Header from '../components/Header';
 import Container from '@mui/material/Container';
 
 const HomeTemplate = () => {
-  const { userLogin } = useSelector((state) => state.userReducer);
+  const { userLoggedIn } = useSelector((state) => state.userReducer);
 
-  if (!userLogin) {
+  if (!userLoggedIn) {
     return <Navigate to="/login" />;
   }
 

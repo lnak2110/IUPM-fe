@@ -33,7 +33,9 @@ export const axiosAuth = axios.create({
 
 axiosAuth.interceptors.request.use(
   (config) => {
-    const token = getStoreJson(process.env.REACT_APP_USER_LOGIN).accessToken;
+    const token = getStoreJson(
+      process.env.REACT_APP_USER_LOGGED_IN
+    ).accessToken;
 
     config.headers.set('Authorization', `Bearer ${token}`);
     // config.headers['Content-Type'] = 'application/json';

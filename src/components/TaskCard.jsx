@@ -1,3 +1,4 @@
+import { useDispatch } from 'react-redux';
 import CommentsDialogContent from './CommentsDialogContent';
 import DialogModal from './DialogModal';
 import TaskDetailDialogContent from './TaskDetailDialogContent';
@@ -17,7 +18,6 @@ import Typography from '@mui/material/Typography';
 import { Draggable } from '@hello-pangea/dnd';
 import { useConfirm } from 'material-ui-confirm';
 import { deleteTaskAPI } from '../redux/reducers/taskReducer';
-import { useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 
 const TaskCard = ({ task, index }) => {
