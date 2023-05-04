@@ -2,63 +2,57 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { axiosAuth } from '../../utils/config';
 
-export const getAllCommentsAPI = createAsyncThunk(
-  'commentReducer/getAllCommentsAPI',
+export const getCommentsByTaskAPI = createAsyncThunk(
+  'commentReducer/getCommentsByTaskAPI',
   async (taskId, { rejectWithValue }) => {
     try {
-      const result = await axiosAuth.get(`/Comment/getAll?taskId=${taskId}`);
+      const result = await axiosAuth.get(`/comments/task/${taskId}`);
 
       if (result?.status === 200) {
-        return result.data.content;
+        return result?.data?.content;
       }
     } catch (error) {
-      if (error) {
-        return rejectWithValue(error);
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
 
-export const addCommentToTaskAPI = createAsyncThunk(
-  'commentReducer/addCommentToTaskAPI',
-  async (addCommentToTaskData, { dispatch, rejectWithValue }) => {
+export const createCommentAPI = createAsyncThunk(
+  'commentReducer/createCommentAPI',
+  async (createCommentData, { dispatch, rejectWithValue }) => {
     try {
-      const result = await axiosAuth.post(
-        '/Comment/insertComment',
-        addCommentToTaskData
-      );
+      const result = await axiosAuth.post('/comments', createCommentData);
 
       if (result?.status === 200) {
-        dispatch(getAllCommentsAPI(addCommentToTaskData.taskId));
+        await dispatch(getCommentsByTaskAPI(createCommentData.taskId));
         toast.success('Add a comment successfully!');
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
 
-export const editCommentAPI = createAsyncThunk(
-  'commentReducer/editCommentAPI',
-  async (editCommentData, { dispatch, rejectWithValue }) => {
+export const updateCommentAPI = createAsyncThunk(
+  'commentReducer/updateCommentAPI',
+  async (updateCommentData, { dispatch, rejectWithValue }) => {
     try {
-      const { taskId, id, contentComment } = editCommentData;
-      const result = await axiosAuth.put(
-        `/Comment/updateComment?id=${id}&contentComment=${contentComment}`
-      );
+      const { id, taskId, content } = updateCommentData;
+
+      const result = await axiosAuth.patch(`/comments/${id}`, { content });
 
       if (result?.status === 200) {
-        dispatch(getAllCommentsAPI(taskId));
+        await dispatch(getCommentsByTaskAPI(taskId));
         toast.success('Edit your comment successfully!');
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -67,20 +61,18 @@ export const deleteCommentAPI = createAsyncThunk(
   'commentReducer/deleteCommentAPI',
   async (deleteCommentData, { dispatch, rejectWithValue }) => {
     try {
-      const { idComment, taskId } = deleteCommentData;
-      const result = await axiosAuth.delete(
-        `/Comment/deleteComment?idComment=${idComment}`
-      );
+      const { id, taskId } = deleteCommentData;
+
+      const result = await axiosAuth.delete(`/comments/${id}`);
 
       if (result?.status === 200) {
-        dispatch(getAllCommentsAPI(taskId));
+        await dispatch(getCommentsByTaskAPI(taskId));
         toast.success('Delete your comment successfully!');
       }
     } catch (error) {
-      if (error) {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -88,7 +80,7 @@ export const deleteCommentAPI = createAsyncThunk(
 const initialState = {
   isLoading: false,
   commentFulfilled: false,
-  allCommentsInTask: [],
+  commentsInTask: [],
 };
 
 const commentReducer = createSlice({
@@ -100,36 +92,46 @@ const commentReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // getAllCommentsAPI
-    builder.addCase(getAllCommentsAPI.pending, (state) => {
+    // getCommentsByTaskAPI
+    builder.addCase(getCommentsByTaskAPI.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(getAllCommentsAPI.fulfilled, (state, { payload }) => {
+    builder.addCase(getCommentsByTaskAPI.fulfilled, (state, { payload }) => {
       state.isLoading = false;
-      state.allCommentsInTask = payload;
+      state.commentsInTask = payload;
     });
-    builder.addCase(getAllCommentsAPI.rejected, (state) => {
+    builder.addCase(getCommentsByTaskAPI.rejected, (state) => {
       state.isLoading = false;
     });
-    // addCommentToTaskAPI
-    builder.addCase(addCommentToTaskAPI.pending, (state) => {
+    // createCommentAPI
+    builder.addCase(createCommentAPI.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(addCommentToTaskAPI.fulfilled, (state) => {
+    builder.addCase(createCommentAPI.fulfilled, (state) => {
       state.isLoading = false;
       state.commentFulfilled = true;
     });
-    builder.addCase(addCommentToTaskAPI.rejected, (state) => {
+    builder.addCase(createCommentAPI.rejected, (state) => {
       state.isLoading = false;
     });
-    // editCommentAPI
-    builder.addCase(editCommentAPI.pending, (state) => {
+    // updateCommentAPI
+    builder.addCase(updateCommentAPI.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(editCommentAPI.fulfilled, (state) => {
+    builder.addCase(updateCommentAPI.fulfilled, (state) => {
       state.isLoading = false;
     });
-    builder.addCase(editCommentAPI.rejected, (state) => {
+    builder.addCase(updateCommentAPI.rejected, (state) => {
+      state.isLoading = false;
+    });
+    // deleteCommentAPI
+    builder.addCase(deleteCommentAPI.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteCommentAPI.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(deleteCommentAPI.rejected, (state) => {
       state.isLoading = false;
     });
   },

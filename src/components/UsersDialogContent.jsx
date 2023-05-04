@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useDebounce } from 'use-debounce';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import {
+  updateProjectAddMemberAPI,
+  updateProjectDeleteMemberAPI,
+} from '../redux/reducers/projectReducer';
 import {
   getAllUsersInProjectAPI,
   getUsersOutsideProjectByKeywordAPI,
   setEmptyUsersOutsideProject,
 } from '../redux/reducers/userReducer';
-import {
-  updateProjectAddMemberAPI,
-  updateProjectDeleteMemberAPI,
-} from '../redux/reducers/projectReducer';
 import { removeAccents } from '../utils/config';
 import { theme } from '../App';
 import Loading from './Loading';
+import UserAvatar from './UserAvatar';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
@@ -20,18 +21,17 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import DialogContent from '@mui/material/DialogContent';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useDispatch, useSelector } from 'react-redux';
-import UserAvatar from './UserAvatar';
+import { useDebounce } from 'use-debounce';
 
 const UsersDialogContent = ({ leaderId }) => {
   const { usersOutsideProject, usersInProject, isLoading } = useSelector(

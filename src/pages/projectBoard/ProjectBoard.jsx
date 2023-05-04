@@ -4,12 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import useTitle from '../../hooks/useTitle';
 import { getProjectDetailFullAPI } from '../../redux/reducers/projectReducer';
 import { updateTaskListAPI } from '../../redux/reducers/taskReducer';
-import { getAllUsersAPI } from '../../redux/reducers/userReducer';
 import { theme } from '../../App';
-import { UserAvatar } from '../../components/UserAvatar';
 import BoardCardContainer from '../../components/BoardCardContainer';
 import CreateTaskDialogContent from '../../components/CreateTaskDialogContent';
 import DialogModal from '../../components/DialogModal';
+import UserAvatar from '../../components/UserAvatar';
 import UsersDialogContent from '../../components/UsersDialogContent';
 import AddIcon from '@mui/icons-material/Add';
 import AvatarGroup from '@mui/material/AvatarGroup';
@@ -43,7 +42,6 @@ const ProjectBoard = () => {
 
   useEffect(() => {
     dispatch(getProjectDetailFullAPI(projectId));
-    // dispatch(getAllUsersAPI());
   }, [dispatch, projectId]);
 
   useEffect(() => {

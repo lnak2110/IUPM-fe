@@ -2,9 +2,9 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const AuthTemplate = () => {
-  const { userLogin } = useSelector((state) => state.userReducer);
+  const { userLoggedIn } = useSelector((state) => state.userReducer);
 
-  if (userLogin) {
+  if (userLoggedIn) {
     return <Navigate to="/projects" />;
   }
 

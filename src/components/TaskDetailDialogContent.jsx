@@ -1,19 +1,22 @@
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import {
+  getProjectDetailFullAPI,
+  getProjectListsAPI,
+} from '../redux/reducers/projectReducer';
 import {
   getTaskDetailAPI,
   setNullTaskDetail,
   updateTaskAPI,
 } from '../redux/reducers/taskReducer';
+import { taskSchema } from '../utils/validation';
 import { theme } from '../App';
-import {
-  getProjectDetailFullAPI,
-  getProjectListsAPI,
-} from '../redux/reducers/projectReducer';
 import ControllerAutocomplete from './ControllerAutocomplete';
 import ControllerEditor from './ControllerEditor';
+import ControllerDateTimePicker from './ControllerDateTimePicker';
 import ControllerSelect from './ControllerSelect';
 import ControllerTextField from './ControllerTextField';
 import Loading from './Loading';
@@ -25,9 +28,6 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import ControllerDateTimePicker from './ControllerDateTimePicker';
-import { taskSchema } from '../utils/validation';
 
 const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
   const { taskDetail, isLoading: isLoadingTask } = useSelector(

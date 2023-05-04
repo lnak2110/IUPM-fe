@@ -1,8 +1,12 @@
 import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { getProjectListsAPI } from '../redux/reducers/projectReducer';
+import { taskSchema } from '../utils/validation';
 import { theme } from '../App';
 import ControllerAutocomplete from './ControllerAutocomplete';
+import ControllerDateTimePicker from './ControllerDateTimePicker';
 import ControllerEditor from './ControllerEditor';
 import ControllerSelect from './ControllerSelect';
 import ControllerTextField from './ControllerTextField';
@@ -19,10 +23,6 @@ import {
   createTaskAPI,
   setFalseTaskFulfilledAction,
 } from '../redux/reducers/taskReducer';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProjectListsAPI } from '../redux/reducers/projectReducer';
-import ControllerDateTimePicker from './ControllerDateTimePicker';
-import { taskSchema } from '../utils/validation';
 
 const CreateTaskDialogContent = ({ projectDetailFull, handleCloseModal }) => {
   const { taskFulfilled, isLoading: isLoadingTask } = useSelector(
