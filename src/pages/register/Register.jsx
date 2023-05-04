@@ -67,22 +67,22 @@ const Register = () => {
         <Box component="form" sx={{ mt: 3 }} onSubmit={handleSubmit(onSubmit)}>
           <ControllerTextField
             control={control}
-            id="register-name"
             name="name"
+            id="register-name"
             label="Name"
             margin="normal"
           />
           <ControllerTextField
             control={control}
-            id="register-email"
             name="email"
+            id="register-email"
             label="Email"
             margin="normal"
           />
           <ControllerPasswordTextField
             control={control}
-            id="register-password"
             name="password"
+            id="register-password"
             label="Password"
             margin="normal"
           />

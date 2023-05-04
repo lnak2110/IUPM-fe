@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { axiosAuth } from '../../utils/config';
-import { getProjectDetailAPI, getProjectDetailFullAPI } from './projectReducer';
+import { getProjectDetailFullAPI } from './projectReducer';
 
 export const createTaskAPI = createAsyncThunk(
   'taskReducer/createTaskAPI',
@@ -97,24 +97,18 @@ export const updateTaskAPI = createAsyncThunk(
 
 export const deleteTaskAPI = createAsyncThunk(
   'taskReducer/deleteTaskAPI',
-  async (deleteTaskData, { dispatch, rejectWithValue }) => {
+  async ({ id, projectId }, { dispatch, rejectWithValue }) => {
     try {
-      const result = await axiosAuth.delete(
-        `/Project/removeTask?taskId=${deleteTaskData.taskId}`
-      );
+      const result = await axiosAuth.delete(`/tasks/${id}`);
 
       if (result?.status === 200) {
-        await dispatch(getProjectDetailAPI(deleteTaskData.projectId));
+        await dispatch(getProjectDetailFullAPI(projectId));
         toast.success('Delete a task successfully!');
       }
     } catch (error) {
-      if (error.response?.status === 403) {
-        toast.error('You are not the creator of this project!');
-        return rejectWithValue('You are not the creator of this project!');
-      } else {
-        toast.error('Something wrong happened!');
-        return rejectWithValue('Something wrong happened!');
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );
@@ -178,6 +172,16 @@ const taskReducer = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateTaskListAPI.rejected, (state) => {
+      state.isLoading = false;
+    });
+    // deleteTaskAPI
+    builder.addCase(deleteTaskAPI.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteTaskAPI.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(deleteTaskAPI.rejected, (state) => {
       state.isLoading = false;
     });
   },

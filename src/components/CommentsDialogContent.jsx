@@ -110,8 +110,8 @@ const CommentsDialogContent = ({ taskId }) => {
           >
             <ControllerEditor
               control={control}
-              id="create-comment-content"
               name="content"
+              id="create-comment-content"
               placeholder="Leave a comment..."
             />
             <Stack

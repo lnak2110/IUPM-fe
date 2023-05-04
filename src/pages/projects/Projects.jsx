@@ -34,7 +34,7 @@ import {
 } from 'material-ui-popup-state/hooks';
 import { useConfirm } from 'material-ui-confirm';
 
-const RowActionsMenu = ({ project }) => {
+const RowActionsMenu = ({ project, currentUserId }) => {
   const dispatch = useDispatch();
 
   const popupState = usePopupState({
@@ -50,7 +50,7 @@ const RowActionsMenu = ({ project }) => {
       titleProps: { sx: { wordWrap: 'break-word' } },
     })
       .then(() => {
-        dispatch(deleteProjectAPI(project.id));
+        dispatch(deleteProjectAPI({ id: project.id, userId: currentUserId }));
       })
       .catch(() => ({}));
   };
@@ -94,8 +94,8 @@ const Projects = () => {
   useTitle('Projects');
 
   useEffect(() => {
-    dispatch(getProjectsByUserAPI(currentUserData.id));
-  }, [dispatch, currentUserData.id]);
+    dispatch(getProjectsByUserAPI(currentUserData?.id));
+  }, [dispatch, currentUserData?.id]);
 
   const columns = useMemo(
     () => [
@@ -139,7 +139,7 @@ const Projects = () => {
         headerName: 'Leader',
         minWidth: 80,
         flex: 0.8,
-        valueGetter: (params) => params.row.leader.email,
+        valueGetter: (params) => params.row.leader?.email,
       },
       {
         field: 'projectMembers',
@@ -149,13 +149,13 @@ const Projects = () => {
         filterable: false,
         sortable: false,
         renderCell: (params) => {
-          if (currentUserData?.id === params.row.leader.id) {
+          if (currentUserData?.id === params.row.leader?.id) {
             return (
               <Stack direction="row" alignItems="center">
                 <AvatarGroup total={params.value}>
                   <UserAvatar
-                    name={params.row.leader.name}
-                    avatar={params.row.leader.avatar}
+                    name={params.row.leader?.name}
+                    avatar={params.row.leader?.avatar}
                   />
                 </AvatarGroup>
                 <DialogModal
@@ -178,7 +178,7 @@ const Projects = () => {
                 >
                   <ProjectUsersDialogContent
                     projectId={params.row.id}
-                    leaderId={params.row.leader.id}
+                    leaderId={params.row.leader?.id}
                   />
                 </DialogModal>
               </Stack>
@@ -188,8 +188,8 @@ const Projects = () => {
           return (
             <AvatarGroup total={params.value}>
               <UserAvatar
-                name={params.row.leader.name}
-                avatar={params.row.leader.avatar}
+                name={params.row.leader?.name}
+                avatar={params.row.leader?.avatar}
               />
             </AvatarGroup>
           );
@@ -203,8 +203,11 @@ const Projects = () => {
         minWidth: 70,
         flex: 0.5,
         renderCell: (params) =>
-          currentUserData?.id === params.row.leader.id && (
-            <RowActionsMenu project={params.row} />
+          currentUserData?.id === params.row.leader?.id && (
+            <RowActionsMenu
+              project={params.row}
+              currentUserId={currentUserData?.id}
+            />
           ),
       },
     ],

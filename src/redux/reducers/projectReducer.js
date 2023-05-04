@@ -192,26 +192,18 @@ export const updateProjectAPI = createAsyncThunk(
 
 export const deleteProjectAPI = createAsyncThunk(
   'projectReducer/deleteProjectAPI',
-  async (projectId, { dispatch, rejectWithValue }) => {
+  async ({ id, userId }, { dispatch, rejectWithValue }) => {
     try {
-      const result = await axiosAuth.delete(
-        `/Project/deleteProject?projectId=${projectId}`
-      );
+      const result = await axiosAuth.delete(`/projects/${id}`);
 
       if (result?.status === 200) {
-        await dispatch(getProjectsByUserAPI());
+        await dispatch(getProjectsByUserAPI(userId));
         toast.success('Delete a project successfully!');
       }
     } catch (error) {
-      if (error) {
-        if (error.response?.status === 403) {
-          toast.error('You are not the creator of this project!');
-          return rejectWithValue('You are not the creator of this project!');
-        } else {
-          toast.error('Something wrong happened!');
-          return rejectWithValue('Something wrong happened!');
-        }
-      }
+      return rejectWithValue(
+        error?.response?.data?.message || 'Something wrong happened!'
+      );
     }
   }
 );

@@ -6,8 +6,8 @@ import TextField from '@mui/material/TextField';
 
 const ControllerAutocompleteFixedOption = ({
   control,
-  id,
   name,
+  id,
   label,
   placeholder,
   options,

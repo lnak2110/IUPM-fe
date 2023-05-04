@@ -33,7 +33,7 @@ const TaskCard = ({ task, index }) => {
       .then(() => {
         dispatch(
           deleteTaskAPI({
-            taskId: task.id,
+            id: task.id,
             projectId: task.listProjectId,
           })
         );

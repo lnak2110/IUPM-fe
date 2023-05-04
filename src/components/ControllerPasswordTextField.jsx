@@ -8,8 +8,8 @@ import TextField from '@mui/material/TextField';
 
 const ControllerPasswordTextField = ({
   control,
-  id,
   name,
+  id,
   label,
   margin = 'dense',
 }) => {
