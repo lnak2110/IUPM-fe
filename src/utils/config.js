@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { router } from '../App';
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
 
 export const { setStore, getStore, getStoreJson, eraseStore } = {
   setStore: (name, value) => {
@@ -63,3 +64,6 @@ export const removeAccents = (str) => {
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D');
 };
+
+export const formatDate = (date) =>
+  date ? format(date, "yyyy-MM-dd'T'HH:mm:ss") : date;

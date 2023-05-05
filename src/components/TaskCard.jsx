@@ -18,9 +18,9 @@ import Typography from '@mui/material/Typography';
 import { Draggable } from '@hello-pangea/dnd';
 import { useConfirm } from 'material-ui-confirm';
 import { deleteTaskAPI } from '../redux/reducers/taskReducer';
-import { format } from 'date-fns';
+import { compareAsc, format } from 'date-fns';
 
-const TaskCard = ({ task, index }) => {
+const TaskCard = ({ task, index, listId }) => {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
@@ -41,6 +41,16 @@ const TaskCard = ({ task, index }) => {
       .catch(() => ({}));
   };
 
+  const isTaskLateDeadline = () => {
+    const { deadline } = task;
+
+    if (compareAsc(new Date(deadline), new Date()) === 1 || !deadline) {
+      return false;
+    } else {
+      return listId !== 4;
+    }
+  };
+
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided) => (
@@ -56,6 +66,7 @@ const TaskCard = ({ task, index }) => {
                 '& .MuiCardContent-root': { p: 2 },
                 mt: 1,
                 cursor: 'grab',
+                ...(isTaskLateDeadline() && { border: '1px solid red' }),
               }}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
