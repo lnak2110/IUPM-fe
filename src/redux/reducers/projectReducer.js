@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { format } from 'date-fns';
 import { toast } from 'react-toastify';
-import { axiosAuth } from '../../utils/config';
+import { axiosAuth, formatDate } from '../../utils/config';
 import {
   getAllUsersInProjectAPI,
   getUsersOutsideProjectByKeywordAPI,
@@ -31,7 +30,7 @@ export const createProjectAPI = createAsyncThunk(
 
       const data = {
         ...restData,
-        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        deadline: formatDate(deadline),
       };
 
       const result = await axiosAuth.post('/projects/', data);
@@ -197,13 +196,13 @@ export const updateProjectAPI = createAsyncThunk(
 
       const data = {
         ...restData,
-        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        deadline: formatDate(deadline),
       };
 
       const result = await axiosAuth.put(`/projects/${id}`, data);
 
       if (result?.status === 200) {
-        await dispatch(getProjectDetailAPI(data.id));
+        await dispatch(getProjectDetailAPI(id));
         toast.success('Update a project successfully!');
       }
     } catch (error) {

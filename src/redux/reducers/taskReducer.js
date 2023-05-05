@@ -1,7 +1,6 @@
-import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { axiosAuth } from '../../utils/config';
+import { axiosAuth, formatDate } from '../../utils/config';
 import { getProjectDetailFullAPI } from './projectReducer';
 
 export const createTaskAPI = createAsyncThunk(
@@ -13,7 +12,7 @@ export const createTaskAPI = createAsyncThunk(
       const data = {
         ...restData,
         taskMembers: taskMembers?.map((user) => user.id),
-        deadline: deadline && format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        deadline: formatDate(deadline),
       };
 
       const result = await axiosAuth.post('/tasks', data);
@@ -80,7 +79,7 @@ export const updateTaskAPI = createAsyncThunk(
       const data = {
         ...restData,
         taskMembers: taskMembers?.map((user) => user.id),
-        deadline: format(deadline, "yyyy-MM-dd'T'HH:mm:ss"),
+        deadline: formatDate(deadline),
       };
 
       const result = await axiosAuth.put(`/tasks/${id}`, data);

@@ -104,19 +104,23 @@ const ProjectBoard = () => {
           <Typography
             variant="h4"
             component="h1"
-            {...(downSm && { sx: { textAlign: 'center' } })}
+            sx={{
+              wordWrap: 'break-word',
+              textAlign: { xs: 'center', sm: 'start' },
+            }}
           >
-            Board
+            {projectDetailFull?.name}
           </Typography>
         </Grid>
         <Grid container item xs={12} md={9}>
           <Stack
             {...(downSm && { spacing: 2 })}
-            direction={downSm ? 'column' : 'row'}
+            direction={{ xs: 'column', sm: 'row' }}
             sx={{
               width: '100%',
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: { xs: 'normal', sm: 'center' },
             }}
           >
             <Stack

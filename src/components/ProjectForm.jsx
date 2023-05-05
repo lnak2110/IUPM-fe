@@ -25,7 +25,7 @@ const ProjectForm = ({
     <Container maxWidth="md">
       <Paper variant="outlined" sx={{ p: 3 }}>
         <Typography variant="h4" component="h1" sx={{ pb: 4 }}>
-          {`${formType === 'edit' ? 'Edit' : 'Create'} Project`}
+          {`${formType === 'update' ? 'Update' : 'Create'} Project`}
         </Typography>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={4}>

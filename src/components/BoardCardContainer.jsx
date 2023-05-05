@@ -52,7 +52,12 @@ const BoardCardContainer = ({ list, index }) => {
               {...provided.droppableProps}
             >
               {list?.tasks?.map((task, index) => (
-                <TaskCard key={task.id} task={task} index={index} />
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  index={index}
+                  listId={list.id}
+                />
               ))}
               {provided.placeholder}
             </Stack>
