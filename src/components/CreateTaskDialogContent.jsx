@@ -131,7 +131,10 @@ const CreateTaskDialogContent = ({ projectDetailFull, handleCloseModal }) => {
                 name="deadline"
                 id="create-task-deadline"
                 label="Deadline (no after project deadline)"
-                maxDateTime={new Date(projectDetailFull.deadline)}
+                maxDateTime={
+                  projectDetailFull.deadline &&
+                  new Date(projectDetailFull.deadline)
+                }
               />
             </Grid>
             <Grid

@@ -82,7 +82,7 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
     defaultValues: initialValues,
     shouldFocusError: true,
     mode: 'onTouched',
-    resolver: yupResolver(taskSchema(projectDetailFull.deadline, false)),
+    resolver: yupResolver(taskSchema(projectDetailFull?.deadline, false)),
   });
 
   const onSubmit = (data) => {
@@ -137,7 +137,7 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
                 id="update-task-members"
                 label="Members"
                 placeholder="Choose task members..."
-                options={projectDetailFull.projectMembers?.map(
+                options={projectDetailFull?.projectMembers?.map(
                   ({ user }) => user
                 )}
                 optionLabel="name"
@@ -151,7 +151,10 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
                 name="deadline"
                 id="update-task-deadline"
                 label="Deadline (no after project deadline)"
-                maxDateTime={new Date(projectDetailFull.deadline)}
+                maxDateTime={
+                  projectDetailFull?.deadline &&
+                  new Date(projectDetailFull.deadline)
+                }
               />
             </Grid>
             <Grid

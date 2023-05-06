@@ -88,7 +88,7 @@ const Header = () => {
               textDecoration: 'none',
             }}
           >
-            JIRAK
+            IUPM
           </Typography>
 
           {downSm ? (

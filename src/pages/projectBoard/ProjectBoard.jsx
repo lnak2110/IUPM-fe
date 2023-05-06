@@ -13,8 +13,10 @@ import UsersDialogContent from '../../components/UsersDialogContent';
 import AddIcon from '@mui/icons-material/Add';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
 import { DragDropContext } from '@hello-pangea/dnd';
@@ -30,6 +32,8 @@ const renderButtonAndUsersList = (isSmallScreen, listLength) => {
 };
 
 const ProjectBoard = () => {
+  const [showMyTasks, setShowMyTasks] = useState(false);
+
   const { projectDetailFull } = useSelector((state) => state.projectReducer);
 
   const [listsTemp, setListsTemp] = useState(null);
@@ -102,7 +106,7 @@ const ProjectBoard = () => {
       <Grid container item xs={12} spacing={2} sx={{ pb: 2 }}>
         <Grid item xs={12} md={3}>
           <Typography
-            variant="h4"
+            variant="h5"
             component="h1"
             sx={{
               wordWrap: 'break-word',
@@ -153,10 +157,7 @@ const ProjectBoard = () => {
                 ariaLabel="users-dialog-title"
                 preventCloseBackdrop={false}
               />
-              <AvatarGroup
-                max={downSm ? 3 : 6}
-                sx={{ flexGrow: { xs: 0.5, sm: 0 } }}
-              >
+              <AvatarGroup max={3} sx={{ flexGrow: { xs: 0.5, sm: 0 } }}>
                 {usersInProject?.map(({ user }) => (
                   <UserAvatar
                     key={user.id}
@@ -166,6 +167,16 @@ const ProjectBoard = () => {
                 ))}
               </AvatarGroup>
             </Stack>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showMyTasks}
+                  onChange={() => setShowMyTasks(!showMyTasks)}
+                />
+              }
+              label="My tasks"
+              sx={{ justifyContent: 'center' }}
+            />
             <DialogModal
               buttonOpen={
                 <Button variant="contained" startIcon={<AddIcon />}>
@@ -196,7 +207,11 @@ const ProjectBoard = () => {
               md={3}
               sx={{ display: 'flex' }}
             >
-              <BoardCardContainer list={list} index={index} />
+              <BoardCardContainer
+                list={list}
+                index={index}
+                showMyTasks={showMyTasks}
+              />
             </Grid>
           ))}
         </Grid>

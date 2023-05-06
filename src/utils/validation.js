@@ -113,7 +113,7 @@ export const taskSchema = (projectDeadline, isNewTask = true) =>
 
         deadline: yup.date().when('deadline', ([value]) => {
           if (value) {
-            return yup
+            const deadlineSchema = yup
               .date()
               .transform((_value, originalValue) => {
                 const parsedDate = isDate(originalValue)
@@ -123,11 +123,14 @@ export const taskSchema = (projectDeadline, isNewTask = true) =>
                 return parsedDate;
               })
               .typeError('Invalid date!')
-              .min(new Date(), 'Deadline must be later than now!')
-              .max(
-                new Date(projectDeadline),
-                'Deadline must not be later than project deadline!'
-              );
+              .min(new Date(), 'Deadline must be later than now!');
+
+            return projectDeadline
+              ? deadlineSchema.max(
+                  new Date(projectDeadline),
+                  'Deadline must not be later than project deadline!'
+                )
+              : deadlineSchema;
           } else {
             return yup.date().nullable().default(null);
           }

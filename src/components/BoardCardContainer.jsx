@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { theme } from '../App';
 import TaskCard from './TaskCard';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -28,7 +29,23 @@ const statusChips = [
   },
 ];
 
-const BoardCardContainer = ({ list, index }) => {
+const BoardCardContainer = ({ list, index, showMyTasks }) => {
+  const { currentUserData } = useSelector((state) => state.userReducer);
+
+  const renderTask = (task, index) => {
+    const isCurrentUserInTask = task.taskMembers?.find(
+      ({ user }) => user.id === currentUserData?.id
+    );
+
+    if (!isCurrentUserInTask && showMyTasks) {
+      return;
+    }
+
+    return (
+      <TaskCard key={task.id} task={task} index={index} listId={list.id} />
+    );
+  };
+
   return (
     <Paper
       sx={{ bgcolor: theme.palette.grey[100], width: '100%', display: 'block' }}
@@ -51,14 +68,7 @@ const BoardCardContainer = ({ list, index }) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {list?.tasks?.map((task, index) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  listId={list.id}
-                />
-              ))}
+              {list?.tasks?.map((task, index) => renderTask(task, index))}
               {provided.placeholder}
             </Stack>
           )}
