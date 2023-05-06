@@ -29,7 +29,7 @@ const statusChips = [
   },
 ];
 
-const BoardCardContainer = ({ list, index, showMyTasks }) => {
+const BoardCardContainer = ({ list, index, showMyTasks, isAllowed }) => {
   const { currentUserData } = useSelector((state) => state.userReducer);
 
   const renderTask = (task, index) => {
@@ -42,7 +42,13 @@ const BoardCardContainer = ({ list, index, showMyTasks }) => {
     }
 
     return (
-      <TaskCard key={task.id} task={task} index={index} listId={list.id} />
+      <TaskCard
+        key={task.id}
+        task={task}
+        index={index}
+        listId={list.id}
+        isAllowed={isAllowed}
+      />
     );
   };
 

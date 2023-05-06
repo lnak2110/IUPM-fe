@@ -20,7 +20,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { deleteTaskAPI } from '../redux/reducers/taskReducer';
 import { compareAsc, format } from 'date-fns';
 
-const TaskCard = ({ task, index, listId }) => {
+const TaskCard = ({ task, index, listId, isAllowed }) => {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
@@ -94,18 +94,20 @@ const TaskCard = ({ task, index, listId }) => {
                   </Tooltip>
                 }
                 action={
-                  <Tooltip title="Delete">
-                    <IconButton
-                      aria-label="delete"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteTask();
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  isAllowed && (
+                    <Tooltip title="Delete">
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTask();
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )
                 }
               />
               <CardContent
@@ -153,7 +155,9 @@ const TaskCard = ({ task, index, listId }) => {
           }
         >
           <TaskDetailDialogTabs
-            taskDetailTabContent={<TaskDetailDialogContent taskId={task.id} />}
+            taskDetailTabContent={
+              <TaskDetailDialogContent taskId={task.id} isAllowed={isAllowed} />
+            }
             commentsTabContent={<CommentsDialogContent taskId={task.id} />}
           />
         </DialogModal>

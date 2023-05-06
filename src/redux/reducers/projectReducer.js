@@ -247,6 +247,12 @@ const projectReducer = createSlice({
     setFalseProjectFulfilledAction: (state) => {
       state.projectFulfilled = false;
     },
+    setNullProjectDetail: (state) => {
+      state.projectDetail = null;
+    },
+    setNullProjectDetailFull: (state) => {
+      state.projectDetailFull = null;
+    },
   },
   extraReducers: (builder) => {
     // getProjectsByUserAPI
@@ -356,6 +362,10 @@ const projectReducer = createSlice({
   },
 });
 
-export const { setFalseProjectFulfilledAction } = projectReducer.actions;
+export const {
+  setFalseProjectFulfilledAction,
+  setNullProjectDetail,
+  setNullProjectDetailFull,
+} = projectReducer.actions;
 
 export default projectReducer.reducer;

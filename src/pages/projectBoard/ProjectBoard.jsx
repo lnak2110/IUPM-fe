@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import useTitle from '../../hooks/useTitle';
-import { getProjectDetailFullAPI } from '../../redux/reducers/projectReducer';
+import {
+  getProjectDetailFullAPI,
+  setNullProjectDetailFull,
+} from '../../redux/reducers/projectReducer';
 import { updateTaskListAPI } from '../../redux/reducers/taskReducer';
+import { checkUserPermission } from '../../utils/config';
 import { theme } from '../../App';
 import BoardCardContainer from '../../components/BoardCardContainer';
 import CreateTaskDialogContent from '../../components/CreateTaskDialogContent';
@@ -35,6 +39,7 @@ const ProjectBoard = () => {
   const [showMyTasks, setShowMyTasks] = useState(false);
 
   const { projectDetailFull } = useSelector((state) => state.projectReducer);
+  const { currentUserData } = useSelector((state) => state.userReducer);
 
   const [listsTemp, setListsTemp] = useState(null);
 
@@ -46,6 +51,10 @@ const ProjectBoard = () => {
 
   useEffect(() => {
     dispatch(getProjectDetailFullAPI(projectId));
+
+    return () => {
+      dispatch(setNullProjectDetailFull());
+    };
   }, [dispatch, projectId]);
 
   useEffect(() => {
@@ -101,6 +110,11 @@ const ProjectBoard = () => {
 
   const usersInProject = projectDetailFull?.projectMembers;
 
+  const isAllowed = checkUserPermission(
+    currentUserData?.id,
+    projectDetailFull?.leaderId
+  );
+
   return (
     <Grid container spacing={4}>
       <Grid container item xs={12} spacing={2} sx={{ pb: 2 }}>
@@ -118,6 +132,7 @@ const ProjectBoard = () => {
         </Grid>
         <Grid container item xs={12} md={9}>
           <Stack
+            spacing={{ xs: 2, sm: 0 }}
             {...(downSm && { spacing: 2 })}
             direction={{ xs: 'column', sm: 'row' }}
             sx={{
@@ -137,6 +152,7 @@ const ProjectBoard = () => {
               })}
             >
               <DialogModal
+                maxWidthValue={!isAllowed && 'xs'}
                 buttonOpen={
                   <Button
                     sx={renderButtonAndUsersList(
@@ -146,11 +162,14 @@ const ProjectBoard = () => {
                     startIcon={<AddIcon />}
                     variant="outlined"
                   >
-                    Add User
+                    User
                   </Button>
                 }
                 children={
-                  <UsersDialogContent leaderId={projectDetailFull?.leaderId} />
+                  <UsersDialogContent
+                    leaderId={projectDetailFull?.leaderId}
+                    isAllowed={isAllowed}
+                  />
                 }
                 popupId="usersDialog"
                 title="All users"
@@ -177,22 +196,24 @@ const ProjectBoard = () => {
               label="My tasks"
               sx={{ justifyContent: 'center' }}
             />
-            <DialogModal
-              buttonOpen={
-                <Button variant="contained" startIcon={<AddIcon />}>
-                  Create Task
-                </Button>
-              }
-              children={
-                <CreateTaskDialogContent
-                  projectDetailFull={projectDetailFull}
-                />
-              }
-              popupId="createTaskDialog"
-              title="Create Task"
-              ariaLabel="create-task-dialog-title"
-              preventCloseBackdrop
-            />
+            {isAllowed && (
+              <DialogModal
+                buttonOpen={
+                  <Button variant="contained" startIcon={<AddIcon />}>
+                    Create Task
+                  </Button>
+                }
+                children={
+                  <CreateTaskDialogContent
+                    projectDetailFull={projectDetailFull}
+                  />
+                }
+                popupId="createTaskDialog"
+                title="Create Task"
+                ariaLabel="create-task-dialog-title"
+                preventCloseBackdrop
+              />
+            )}
           </Stack>
         </Grid>
       </Grid>
@@ -211,6 +232,7 @@ const ProjectBoard = () => {
                 list={list}
                 index={index}
                 showMyTasks={showMyTasks}
+                isAllowed={isAllowed}
               />
             </Grid>
           ))}

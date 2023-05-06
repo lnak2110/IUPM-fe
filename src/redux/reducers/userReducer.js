@@ -182,6 +182,9 @@ const userReducer = createSlice({
     setFalseUserFulfilledAction: (state) => {
       state.userFulfilled = false;
     },
+    setEmptyUsersInProject: (state) => {
+      state.usersInProject = [];
+    },
     setEmptyUsersOutsideProject: (state) => {
       state.usersOutsideProject = [];
     },
@@ -274,6 +277,7 @@ export const {
   logoutAction,
   saveCurrentUserDataAction,
   setFalseUserFulfilledAction,
+  setEmptyUsersInProject,
   setEmptyUsersOutsideProject,
 } = userReducer.actions;
 

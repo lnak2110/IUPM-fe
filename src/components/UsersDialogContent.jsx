@@ -8,6 +8,7 @@ import {
 import {
   getAllUsersInProjectAPI,
   getUsersOutsideProjectByKeywordAPI,
+  setEmptyUsersInProject,
   setEmptyUsersOutsideProject,
 } from '../redux/reducers/userReducer';
 import { removeAccents } from '../utils/config';
@@ -33,7 +34,7 @@ import { useMediaQuery } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import { useDebounce } from 'use-debounce';
 
-const UsersDialogContent = ({ leaderId }) => {
+const UsersDialogContent = ({ leaderId, isAllowed }) => {
   const { usersOutsideProject, usersInProject, isLoading } = useSelector(
     (state) => state.userReducer
   );
@@ -51,6 +52,10 @@ const UsersDialogContent = ({ leaderId }) => {
 
   useEffect(() => {
     dispatch(getAllUsersInProjectAPI(projectId));
+
+    return () => {
+      dispatch(setEmptyUsersInProject());
+    };
   }, [dispatch, projectId]);
 
   useEffect(() => {
@@ -111,6 +116,10 @@ const UsersDialogContent = ({ leaderId }) => {
         />
       );
     } else {
+      if (!isAllowed) {
+        return;
+      }
+
       if (downSm) {
         return (
           <IconButton
@@ -140,71 +149,73 @@ const UsersDialogContent = ({ leaderId }) => {
   return (
     <DialogContent>
       <Grid container spacing={1}>
-        <Grid item md={6} sx={{ width: '100%' }}>
-          <TextField
-            type="search"
-            size="small"
-            placeholder="Search..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PersonSearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleChangeKeyword}
-          />
-          <List>
-            {usersOutsideProject?.map((user, index) => (
-              <ListItem
-                key={user.id}
-                alignItems="flex-start"
-                divider={index < usersOutsideProject?.length - 1}
-                secondaryAction={
-                  downSm ? (
-                    <IconButton
-                      color="primary"
-                      aria-label="add memeber to project"
-                      onClick={() => handleAddUserToProject(user.id)}
-                    >
-                      <PersonAddIcon />
-                    </IconButton>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      startIcon={<PersonAddIcon />}
-                      aria-label="add memeber to project"
-                      onClick={() => handleAddUserToProject(user.id)}
-                    >
-                      Add
-                    </Button>
-                  )
-                }
-              >
-                <ListItemAvatar>
-                  <UserAvatar
-                    name={user.name}
-                    avatar={user.avatar}
-                    tooltip=""
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Typography
-                      sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
-                    >
-                      {user.name}
-                    </Typography>
+        {isAllowed && (
+          <Grid item md={6} sx={{ width: '100%' }}>
+            <TextField
+              type="search"
+              size="small"
+              placeholder="Search..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonSearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChangeKeyword}
+            />
+            <List>
+              {usersOutsideProject?.map((user, index) => (
+                <ListItem
+                  key={user.id}
+                  alignItems="flex-start"
+                  divider={index < usersOutsideProject?.length - 1}
+                  secondaryAction={
+                    downSm ? (
+                      <IconButton
+                        color="primary"
+                        aria-label="add memeber to project"
+                        onClick={() => handleAddUserToProject(user.id)}
+                      >
+                        <PersonAddIcon />
+                      </IconButton>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        startIcon={<PersonAddIcon />}
+                        aria-label="add memeber to project"
+                        onClick={() => handleAddUserToProject(user.id)}
+                      >
+                        Add
+                      </Button>
+                    )
                   }
-                  secondary={`${user.email}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
-        <Grid item md={6} sx={{ width: '100%' }}>
+                >
+                  <ListItemAvatar>
+                    <UserAvatar
+                      name={user.name}
+                      avatar={user.avatar}
+                      tooltip=""
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Typography
+                        sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
+                      >
+                        {user.name}
+                      </Typography>
+                    }
+                    secondary={`${user.email}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+        )}
+        <Grid item md={isAllowed && 6} sx={{ width: '100%' }}>
           <Typography variant="h6" component="h3" gutterBottom>
-            Already in the project
+            Project members
           </Typography>
           <List>
             {usersInProject?.map((user, index) => (
@@ -223,12 +234,18 @@ const UsersDialogContent = ({ leaderId }) => {
                 <ListItemText
                   primary={
                     <Typography
-                      sx={{ maxWidth: '60%', wordBreak: 'break-word' }}
+                      sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
                     >
                       {user.name}
                     </Typography>
                   }
-                  secondary={`${user.email}`}
+                  secondary={
+                    <Typography
+                      sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
+                    >
+                      {user.email}
+                    </Typography>
+                  }
                 />
               </ListItem>
             ))}

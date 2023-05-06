@@ -67,3 +67,5 @@ export const removeAccents = (str) => {
 
 export const formatDate = (date) =>
   date ? format(date, "yyyy-MM-dd'T'HH:mm:ss") : date;
+
+export const checkUserPermission = (userId, idAllowed) => userId === idAllowed;
