@@ -29,7 +29,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useMediaQuery } from '@mui/material';
 
-const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
+const TaskDetailDialogContent = ({ taskId, handleCloseModal, isAllowed }) => {
   const { taskDetail, isLoading: isLoadingTask } = useSelector(
     (state) => state.taskReducer
   );
@@ -184,36 +184,38 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal }) => {
         </Box>
       </DialogContent>
       <Divider />
-      <DialogActions
-        disableSpacing
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column-reverse', sm: 'row' },
-          px: 3,
-        }}
-      >
-        <Button
-          variant="outlined"
-          fullWidth={downSm}
-          onClick={handleCloseModal}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          form="edit-task-form"
-          variant="contained"
-          fullWidth={downSm}
+      {isAllowed && (
+        <DialogActions
+          disableSpacing
           sx={{
-            mb: { xs: 1, sm: 0 },
-            ml: { sm: 2 },
-            mr: { md: 2 },
+            display: 'flex',
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            px: 3,
           }}
-          disabled={isSubmitting}
         >
-          Update Task
-        </Button>
-      </DialogActions>
+          <Button
+            variant="outlined"
+            fullWidth={downSm}
+            onClick={handleCloseModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="edit-task-form"
+            variant="contained"
+            fullWidth={downSm}
+            sx={{
+              mb: { xs: 1, sm: 0 },
+              ml: { sm: 2 },
+              mr: { md: 2 },
+            }}
+            disabled={isSubmitting}
+          >
+            Update Task
+          </Button>
+        </DialogActions>
+      )}
       {(isLoadingTask || isLoadingProject) && <Loading />}
     </>
   );

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   getProjectDetailAPI,
+  setNullProjectDetail,
   updateProjectAPI,
 } from '../../redux/reducers/projectReducer';
 import { projectSchema } from '../../utils/validation';
@@ -48,6 +49,10 @@ const UpdateProject = () => {
 
   useEffect(() => {
     dispatch(getProjectDetailAPI(projectId));
+
+    return () => {
+      dispatch(setNullProjectDetail());
+    };
   }, [dispatch, projectId]);
 
   // Reset defaultvalues after received data from API
