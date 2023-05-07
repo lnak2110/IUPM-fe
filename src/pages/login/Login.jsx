@@ -14,34 +14,34 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-// import image1 from '../../assets/images/login-background-1.jpg';
-// import image2 from '../../assets/images/login-background-2.jpg';
-// import image3 from '../../assets/images/login-background-3.jpg';
-// import image4 from '../../assets/images/login-background-4.jpg';
-// import image5 from '../../assets/images/login-background-5.jpg';
-// import image6 from '../../assets/images/login-background-6.jpg';
-// import image7 from '../../assets/images/login-background-7.jpg';
-// import image8 from '../../assets/images/login-background-8.jpg';
-// import image9 from '../../assets/images/login-background-9.jpg';
-// import image10 from '../../assets/images/login-background-10.jpg';
+import image1 from '../../assets/images/login-background-1.jpg';
+import image2 from '../../assets/images/login-background-2.jpg';
+import image3 from '../../assets/images/login-background-3.jpg';
+import image4 from '../../assets/images/login-background-4.jpg';
+import image5 from '../../assets/images/login-background-5.jpg';
+import image6 from '../../assets/images/login-background-6.jpg';
+import image7 from '../../assets/images/login-background-7.jpg';
+import image8 from '../../assets/images/login-background-8.jpg';
+import image9 from '../../assets/images/login-background-9.jpg';
+import image10 from '../../assets/images/login-background-10.jpg';
 
-// const loginBackgroundImages = [
-//   image1,
-//   image2,
-//   image3,
-//   image4,
-//   image5,
-//   image6,
-//   image7,
-//   image8,
-//   image9,
-//   image10,
-// ];
+const loginBackgroundImages = [
+  image1,
+  image2,
+  image3,
+  image4,
+  image5,
+  image6,
+  image7,
+  image8,
+  image9,
+  image10,
+];
 
-// const randomImage =
-//   loginBackgroundImages[
-//     Math.floor(Math.random() * loginBackgroundImages.length)
-//   ];
+const randomImage =
+  loginBackgroundImages[
+    Math.floor(Math.random() * loginBackgroundImages.length)
+  ];
 
 const Login = () => {
   const { isLoading } = useSelector((state) => state.userReducer);
@@ -75,7 +75,7 @@ const Login = () => {
         sm={4}
         md={7}
         sx={{
-          // backgroundImage: `url(${randomImage})`,
+          backgroundImage: `url(${randomImage})`,
           backgroundRepeat: 'no-repeat',
           backgroundColor: (t) =>
             t.palette.mode === 'light'

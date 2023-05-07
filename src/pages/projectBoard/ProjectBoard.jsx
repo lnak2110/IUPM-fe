@@ -217,7 +217,7 @@ const ProjectBoard = () => {
           </Stack>
         </Grid>
       </Grid>
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={isAllowed && handleDragEnd}>
         <Grid container item xs={12} spacing={2}>
           {listsTemp?.map((list, index) => (
             <Grid
