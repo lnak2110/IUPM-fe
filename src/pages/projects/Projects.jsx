@@ -42,6 +42,8 @@ import {
 import { useConfirm } from 'material-ui-confirm';
 import { compareAsc } from 'date-fns';
 
+const projectStatus = ['Done', 'Doing', 'Late'];
+
 const RowActionsMenu = ({ project, currentUserId, isDone }) => {
   const dispatch = useDispatch();
 
@@ -105,11 +107,23 @@ const RowActionsMenu = ({ project, currentUserId, isDone }) => {
   );
 };
 
-const renderStatus = (isDone, deadline) => {
+const formatStatus = (isDone, deadline) => {
   if (isDone) {
+    return projectStatus[0];
+  } else {
+    if (compareAsc(new Date(deadline), new Date()) === 1 || !deadline) {
+      return projectStatus[1];
+    } else {
+      return projectStatus[2];
+    }
+  }
+};
+
+const renderStatus = (status) => {
+  if (status === projectStatus[0]) {
     return (
       <Chip
-        label="Done"
+        label={projectStatus[0]}
         size="small"
         variant="outlined"
         color="success"
@@ -117,10 +131,10 @@ const renderStatus = (isDone, deadline) => {
       />
     );
   } else {
-    if (compareAsc(new Date(deadline), new Date()) === 1 || !deadline) {
+    if (status === projectStatus[1]) {
       return (
         <Chip
-          label="Doing"
+          label={projectStatus[1]}
           size="small"
           variant="outlined"
           color="blueGrey"
@@ -130,7 +144,7 @@ const renderStatus = (isDone, deadline) => {
     } else {
       return (
         <Chip
-          label="Late"
+          label={projectStatus[2]}
           size="small"
           variant="outlined"
           color="error"
@@ -195,9 +209,13 @@ const Projects = () => {
       {
         field: 'isDone',
         headerName: 'Status',
+        type: 'singleSelect',
         minWidth: 100,
         flex: 0.6,
-        renderCell: (params) => renderStatus(params.value, params.row.deadline),
+        valueOptions: projectStatus,
+        valueGetter: (params) =>
+          formatStatus(params.value, params.row.deadline),
+        renderCell: (params) => renderStatus(params.value),
       },
       {
         field: 'leader',
@@ -209,18 +227,23 @@ const Projects = () => {
       {
         field: 'projectMembers',
         headerName: 'Members',
+        type: 'singleSelect',
         minWidth: 140,
         flex: 0.8,
-        filterable: false,
-        sortable: false,
+        valueOptions: ['Leader', 'Normal member'],
+        valueGetter: (params) =>
+          currentUserData?.id === params.row.leader?.id
+            ? 'Leader'
+            : 'Normal member',
         renderCell: (params) => {
           if (currentUserData?.id === params.row.leader?.id) {
             return (
               <Stack direction="row" alignItems="center">
-                <AvatarGroup total={params.value}>
+                <AvatarGroup total={params.row.projectMembers}>
                   <UserAvatar
                     name={params.row.leader?.name}
                     avatar={params.row.leader?.avatar}
+                    tooltipPlacement="left"
                   />
                 </AvatarGroup>
                 <DialogModal
@@ -251,10 +274,11 @@ const Projects = () => {
           }
 
           return (
-            <AvatarGroup total={params.value}>
+            <AvatarGroup total={params.row.projectMembers}>
               <UserAvatar
                 name={params.row.leader?.name}
                 avatar={params.row.leader?.avatar}
+                tooltipPlacement="left"
               />
             </AvatarGroup>
           );
@@ -316,6 +340,7 @@ const Projects = () => {
       rows={rows}
       initialPageSizeNumber={10}
       rowId="id"
+      filterValues={projectStatus}
     />
   );
 };
