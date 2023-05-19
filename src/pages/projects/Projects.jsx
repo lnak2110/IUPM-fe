@@ -230,11 +230,11 @@ const Projects = () => {
         type: 'singleSelect',
         minWidth: 140,
         flex: 0.8,
-        valueOptions: ['Leader', 'Normal member'],
+        valueOptions: ['Leader', 'Ordinary member'],
         valueGetter: (params) =>
           currentUserData?.id === params.row.leader?.id
             ? 'Leader'
-            : 'Normal member',
+            : 'Ordinary member',
         renderCell: (params) => {
           if (currentUserData?.id === params.row.leader?.id) {
             return (

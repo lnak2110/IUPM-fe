@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import { router } from '../../App';
 import { axiosAuth, formatDate } from '../../utils/config';
 import {
   getAllUsersInProjectAPI,
@@ -67,12 +68,13 @@ export const getProjectDetailAPI = createAsyncThunk(
   'projectReducer/getProjectDetailAPI',
   async (id, { rejectWithValue }) => {
     try {
-      const result = await axiosAuth.get(`/projects/${id}?data=short`);
+      const result = await axiosAuth.get(`/projects/${id}?data=basic`);
 
       if (result?.status === 200) {
         return result.data.content;
       }
     } catch (error) {
+      router.navigate('/projects');
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
@@ -90,6 +92,7 @@ export const getProjectDetailFullAPI = createAsyncThunk(
         return result.data.content;
       }
     } catch (error) {
+      router.navigate('/projects');
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
@@ -155,9 +158,10 @@ export const updateProjectDeleteMemberAPI = createAsyncThunk(
         await dispatch(getAllUsersInProjectAPI(id));
         await dispatch(getProjectDetailFullAPI(id));
         // Reset users outside project list while searching
-        await dispatch(
-          getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
-        );
+        keyword &&
+          (await dispatch(
+            getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
+          ));
         toast.success('Update project members successfully!');
       }
     } catch (error) {

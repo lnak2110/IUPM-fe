@@ -19,6 +19,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { useConfirm } from 'material-ui-confirm';
 import { deleteTaskAPI } from '../redux/reducers/taskReducer';
 import { compareAsc, format } from 'date-fns';
+import { NavLink } from 'react-router-dom';
 
 const TaskCard = ({ task, index, listId, isAllowed }) => {
   const dispatch = useDispatch();
@@ -56,14 +57,18 @@ const TaskCard = ({ task, index, listId, isAllowed }) => {
       {(provided) => (
         <DialogModal
           key={task.id}
+          taskId={task.id}
           popupId="taskDetailDialog"
           title={task.name}
           ariaLabel="task-detail-dialog-title"
           preventCloseBackdrop
           buttonOpen={
             <Card
+              component={NavLink}
+              to={`task/${task.id}`}
               sx={{
                 '& .MuiCardContent-root': { p: 2 },
+                textDecoration: 'none',
                 mt: 1,
                 cursor: 'grab',
                 ...(isTaskLateDeadline() && { border: '1px solid red' }),
@@ -100,6 +105,7 @@ const TaskCard = ({ task, index, listId, isAllowed }) => {
                         aria-label="delete"
                         size="small"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           handleDeleteTask();
                         }}
@@ -134,7 +140,10 @@ const TaskCard = ({ task, index, listId, isAllowed }) => {
                   >
                     <Badge
                       overlap="circular"
-                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
                       badgeContent={task.taskMembers?.length}
                       color="secondary"
                     >

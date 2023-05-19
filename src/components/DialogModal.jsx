@@ -1,4 +1,4 @@
-import { cloneElement } from 'react';
+import { cloneElement, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
@@ -10,6 +10,7 @@ import {
   bindTrigger,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
+import { NavLink, useParams } from 'react-router-dom';
 
 const DialogModal = ({
   buttonOpen,
@@ -20,11 +21,25 @@ const DialogModal = ({
   preventCloseBackdrop,
   maxWidthValue,
   heightValue,
+  taskId,
 }) => {
+  const { taskId: taskIdURL } = useParams();
+
   const dialogPopupState = usePopupState({
     variant: 'dialog',
     popupId: popupId,
   });
+
+  useEffect(() => {
+    if (
+      taskId &&
+      taskIdURL &&
+      taskIdURL === taskId &&
+      !dialogPopupState.isOpen
+    ) {
+      dialogPopupState.open();
+    }
+  }, [taskId, taskIdURL, dialogPopupState]);
 
   return (
     <>
@@ -67,13 +82,15 @@ const DialogModal = ({
           <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {title}
           </Box>
-          <IconButton
-            aria-label="close"
-            edge="end"
-            onClick={dialogPopupState.close}
-          >
-            <CloseIcon />
-          </IconButton>
+          <NavLink to={'.'}>
+            <IconButton
+              aria-label="close"
+              edge="end"
+              onClick={dialogPopupState.close}
+            >
+              <CloseIcon />
+            </IconButton>
+          </NavLink>
         </DialogTitle>
         <Divider />
         {cloneElement(children, { handleCloseModal: dialogPopupState.close })}
