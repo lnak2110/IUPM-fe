@@ -50,6 +50,10 @@ const Header = () => {
   const activeTab = () => {
     const { pathname } = location;
     const projectBoardPath = matchPath('/projects/:projectId/board', pathname);
+    const projectBoardTaskPath = matchPath(
+      '/projects/:projectId/board/task/:taskId',
+      pathname
+    );
     const projectUpdatePath = matchPath(
       '/projects/:projectId/update',
       pathname
@@ -60,7 +64,7 @@ const Header = () => {
       return false;
     } else if (pagesPath) {
       return pathname;
-    } else if (projectBoardPath || projectUpdatePath) {
+    } else if (projectBoardPath || projectBoardTaskPath || projectUpdatePath) {
       return '/projects';
     }
   };

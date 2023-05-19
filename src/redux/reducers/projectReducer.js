@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import { router } from '../../App';
 import { axiosAuth, formatDate } from '../../utils/config';
 import {
   getAllUsersInProjectAPI,
@@ -73,6 +74,7 @@ export const getProjectDetailAPI = createAsyncThunk(
         return result.data.content;
       }
     } catch (error) {
+      router.navigate('/projects');
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );
@@ -90,6 +92,7 @@ export const getProjectDetailFullAPI = createAsyncThunk(
         return result.data.content;
       }
     } catch (error) {
+      router.navigate('/projects');
       return rejectWithValue(
         error?.response?.data?.message || 'Something wrong happened!'
       );

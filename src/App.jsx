@@ -74,7 +74,9 @@ export const router = createBrowserRouter([
                 path=":projectId/update"
                 element={<UpdateProject />}
               ></Route>
-              <Route path=":projectId/board" element={<ProjectBoard />}></Route>
+              <Route path=":projectId/board" element={<ProjectBoard />}>
+                <Route path="task/:taskId" element />
+              </Route>
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/projects" />}></Route>

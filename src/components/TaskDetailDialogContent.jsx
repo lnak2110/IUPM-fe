@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -106,7 +106,7 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal, isAllowed }) => {
     <>
       <DialogContent>
         <Box
-          id="edit-task-form"
+          id="update-task-form"
           component="form"
           onSubmit={handleSubmit(onSubmit)}
         >
@@ -196,13 +196,15 @@ const TaskDetailDialogContent = ({ taskId, handleCloseModal, isAllowed }) => {
           <Button
             variant="outlined"
             fullWidth={downSm}
+            component={NavLink}
+            to="."
             onClick={handleCloseModal}
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            form="edit-task-form"
+            form="update-task-form"
             variant="contained"
             fullWidth={downSm}
             sx={{
