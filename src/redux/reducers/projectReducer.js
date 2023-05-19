@@ -67,7 +67,7 @@ export const getProjectDetailAPI = createAsyncThunk(
   'projectReducer/getProjectDetailAPI',
   async (id, { rejectWithValue }) => {
     try {
-      const result = await axiosAuth.get(`/projects/${id}?data=short`);
+      const result = await axiosAuth.get(`/projects/${id}?data=basic`);
 
       if (result?.status === 200) {
         return result.data.content;
@@ -155,9 +155,10 @@ export const updateProjectDeleteMemberAPI = createAsyncThunk(
         await dispatch(getAllUsersInProjectAPI(id));
         await dispatch(getProjectDetailFullAPI(id));
         // Reset users outside project list while searching
-        await dispatch(
-          getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
-        );
+        keyword &&
+          (await dispatch(
+            getUsersOutsideProjectByKeywordAPI({ projectId: id, keyword })
+          ));
         toast.success('Update project members successfully!');
       }
     } catch (error) {

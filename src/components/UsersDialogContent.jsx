@@ -42,7 +42,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
   const [keyword, setKeyword] = useState('');
 
   const [keywordDebounced] = useDebounce(
-    removeAccents(keyword).toLowerCase(),
+    removeAccents(keyword.trim()).toLowerCase(),
     500
   );
 

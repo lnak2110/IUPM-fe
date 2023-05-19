@@ -35,10 +35,7 @@ export const updateTaskListAPI = createAsyncThunk(
     const { id, projectId, ...restData } = updateTaskListData;
 
     try {
-      const result = await axiosAuth.patch(
-        `/tasks/${id}/update-list`,
-        restData
-      );
+      const result = await axiosAuth.patch(`/tasks/${id}/list`, restData);
 
       if (result?.status === 200) {
         dispatch(getProjectDetailFullAPI(projectId));

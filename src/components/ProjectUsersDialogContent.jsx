@@ -5,6 +5,7 @@ import { updateProjectManyMembersAPI } from '../redux/reducers/projectReducer';
 import {
   getAllUsersAPI,
   getAllUsersInProjectAPI,
+  setEmptyUsersInProject,
 } from '../redux/reducers/userReducer';
 import { theme } from '../App';
 import ControllerAutocompleteFixedOption from './ControllerAutocompleteFixedOption';
@@ -32,6 +33,10 @@ const ProjectUsersDialogContent = ({
   useEffect(() => {
     dispatch(getAllUsersAPI());
     dispatch(getAllUsersInProjectAPI(projectId));
+
+    return () => {
+      dispatch(setEmptyUsersInProject());
+    };
   }, [dispatch, projectId]);
 
   const initialValues = useMemo(

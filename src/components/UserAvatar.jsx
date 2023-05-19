@@ -10,9 +10,11 @@ const UserAvatar = ({
 }) => {
   return (
     <Tooltip title={tooltip} placement={tooltipPlacement || 'bottom'}>
-      <Avatar alt={name} src={avatar} sx={{ height: size, width: size }}>
-        {name}
-      </Avatar>
+      <Avatar
+        alt={name}
+        src={avatar || '...'} // Fallback to first letter if null avatar
+        sx={{ height: size, width: size }}
+      ></Avatar>
     </Tooltip>
   );
 };
