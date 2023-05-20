@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { theme } from '../App';
 import TaskCard from './TaskCard';
 import EngineeringIcon from '@mui/icons-material/Engineering';
-import NextPlanIcon from '@mui/icons-material/NextPlan';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import TaskIcon from '@mui/icons-material/Task';
 import Chip from '@mui/material/Chip';
@@ -16,12 +16,12 @@ const statusChips = [
     icon: <ReceiptLongIcon />,
   },
   {
-    color: 'cyan',
-    icon: <NextPlanIcon />,
-  },
-  {
     color: 'warning',
     icon: <EngineeringIcon />,
+  },
+  {
+    color: 'cyan',
+    icon: <PublishedWithChangesIcon />,
   },
   {
     color: 'green',

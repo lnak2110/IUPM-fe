@@ -126,6 +126,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
             color="error"
             aria-label="delete user from project"
             onClick={() => handleDeleteUserFromProject(user)}
+            disabled={isLoading}
           >
             <PersonRemoveIcon />
           </IconButton>
@@ -138,6 +139,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
             startIcon={<PersonRemoveIcon />}
             aria-label="delete user from project"
             onClick={() => handleDeleteUserFromProject(user)}
+            disabled={isLoading}
           >
             Delete
           </Button>
@@ -176,6 +178,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
                         color="primary"
                         aria-label="add memeber to project"
                         onClick={() => handleAddUserToProject(user.id)}
+                        disabled={isLoading}
                       >
                         <PersonAddIcon />
                       </IconButton>
@@ -185,6 +188,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
                         startIcon={<PersonAddIcon />}
                         aria-label="add memeber to project"
                         onClick={() => handleAddUserToProject(user.id)}
+                        disabled={isLoading}
                       >
                         Add
                       </Button>
@@ -206,7 +210,14 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
                         {user.name}
                       </Typography>
                     }
-                    secondary={`${user.email}`}
+                    secondary={
+                      <Typography
+                        variant="caption"
+                        sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
+                      >
+                        {user.email}
+                      </Typography>
+                    }
                   />
                 </ListItem>
               ))}
@@ -241,6 +252,7 @@ const UsersDialogContent = ({ leaderId, isAllowed }) => {
                   }
                   secondary={
                     <Typography
+                      variant="caption"
                       sx={{ maxWidth: '70%', wordBreak: 'break-word' }}
                     >
                       {user.email}

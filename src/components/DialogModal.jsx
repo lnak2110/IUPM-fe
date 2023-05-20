@@ -30,6 +30,7 @@ const DialogModal = ({
     popupId: popupId,
   });
 
+  // For task detail dialog
   useEffect(() => {
     if (
       taskId &&
@@ -82,15 +83,16 @@ const DialogModal = ({
           <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {title}
           </Box>
-          <NavLink to={'.'}>
-            <IconButton
-              aria-label="close"
-              edge="end"
-              onClick={dialogPopupState.close}
-            >
-              <CloseIcon />
-            </IconButton>
-          </NavLink>
+          <IconButton
+            aria-label="close"
+            edge="end"
+            onClick={dialogPopupState.close}
+            // For task detail dialog
+            {...(taskId && { component: NavLink })}
+            {...(taskId && { to: '.' })}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <Divider />
         {cloneElement(children, { handleCloseModal: dialogPopupState.close })}
