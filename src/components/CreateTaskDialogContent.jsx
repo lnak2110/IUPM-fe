@@ -90,7 +90,7 @@ const CreateTaskDialogContent = ({ projectDetailFull, handleCloseModal }) => {
           component="form"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             <Grid item xs={12}>
               <ControllerTextField
                 control={control}
