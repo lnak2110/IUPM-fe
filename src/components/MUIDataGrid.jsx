@@ -19,15 +19,17 @@ const MUIDataGrid = ({ columns, rows, initialPageSizeNumber, rowId }) => {
     //  minWidth: Prevent MUI useResizeContainer error
     <Box sx={{ minWidth: '100px' }}>
       <DataGrid
+        initialState={{
+          pagination: { paginationModel: { pageSize } },
+        }}
         rows={rows ?? []}
         columns={columns}
         getRowId={(row) => row[rowId]}
         autoHeight
         disableRowSelectionOnClick
         pageSizeOptions={[10, 20, 50, 100]}
-        paginationModel={{ page: 0, pageSize }}
         onPaginationModelChange={(newPageSizeNumber) =>
-          setPageSize(newPageSizeNumber)
+          setPageSize(newPageSizeNumber.pageSize)
         }
         disableDensitySelector
         components={{
